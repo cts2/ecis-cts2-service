@@ -1,0 +1,93 @@
+/*
+ * Copyright: (c) 2004-2012 Mayo Foundation for Medical Education and 
+ * Research (MFMER). All rights reserved. MAYO, MAYO CLINIC, and the
+ * triple-shield Mayo logo are trademarks and service marks of MFMER.
+ *
+ * Except as contained in the copyright notice above, or as used to identify 
+ * MFMER as the author of this software, the trade names, trademarks, service
+ * marks, or product names of the copyright holder shall not be used in
+ * advertising, promotion or otherwise in connection with this software without
+ * prior written authorization of the copyright holder.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package edu.mayo.cts2.framework.plugin.service.ecis.profile;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import org.springframework.beans.factory.InitializingBean;
+
+import edu.mayo.cts2.framework.model.core.MatchAlgorithmReference;
+import edu.mayo.cts2.framework.model.core.PropertyReference;
+import edu.mayo.cts2.framework.service.meta.StandardMatchAlgorithmReference;
+import edu.mayo.cts2.framework.service.profile.BaseQueryService;
+
+/**
+ * The Class AbstractQueryService.
+ *
+ * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
+ */
+public abstract class AbstractQueryService extends AbstractService
+	implements BaseQueryService, InitializingBean {
+
+	private Set<VariableTiedPropertyReference> modelAttributeReferences;
+	
+	/* (non-Javadoc)
+	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+	 */
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		this.modelAttributeReferences = new HashSet<VariableTiedPropertyReference>();
+		this.doAddSupportedModelAttributes(this.modelAttributeReferences);
+	}
+	
+	/**
+	 * Do add supported model attributes.
+	 *
+	 * @param set the set
+	 */
+	public abstract void doAddSupportedModelAttributes(Set<VariableTiedPropertyReference> set);
+	
+	@Override
+	public Set<? extends MatchAlgorithmReference> getSupportedMatchAlgorithms() {
+		HashSet<MatchAlgorithmReference> returnSet = new HashSet<MatchAlgorithmReference>();
+		
+		returnSet.add(StandardMatchAlgorithmReference.CONTAINS.getMatchAlgorithmReference());
+		
+		return returnSet;
+	}
+
+	@Override
+	public Set<VariableTiedPropertyReference> getSupportedSearchReferences() {
+		return this.modelAttributeReferences;
+	}
+	
+	/**
+	 * Find supported model attribute.
+	 *
+	 * @param refToLookFor the ref to look for
+	 * @return the variable tied model attribute reference
+	 */
+	public VariableTiedPropertyReference findSupportedModelAttribute(PropertyReference refToLookFor) {
+		for(VariableTiedPropertyReference ref : this.modelAttributeReferences){
+			if(ref.getReferenceTarget().getName().equals(refToLookFor.getReferenceTarget().getName())){
+				return ref;
+			}
+		}
+		
+		return null;
+	}
+
+
+}
