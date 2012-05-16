@@ -61,9 +61,6 @@ public class EcisResolvedValueSetQueryService extends AbstractQueryService imple
 	
 	private final static String LIMIT = "limit";
 	private final static String OFFSET = "offset";
-	
-	@Resource
-	private RdfDao rdfDao;
 
 	/* (non-Javadoc)
 	 * @see edu.mayo.cts2.framework.service.profile.QueryService#getResourceSummaries(edu.mayo.cts2.framework.service.profile.ResourceQuery, edu.mayo.cts2.framework.model.core.SortCriteria, edu.mayo.cts2.framework.model.command.Page)
@@ -94,13 +91,13 @@ public class EcisResolvedValueSetQueryService extends AbstractQueryService imple
 		
 		parameters.put("filters", variableQuery);
 		
-		List<ResolvedValueSetDirectoryEntry> results;
+		List<ResolvedValueSetDirectoryEntry> results=null;
 		
-			results = rdfDao.selectForList(
-					RESOLVEDVALUESET_NAMESPACE, 
-					GET_RESOLVEDVALUESET_SUMMARIES,
-					parameters,
-					ResolvedValueSetDirectoryEntry.class);
+//			results = rdfDao.selectForList(
+//					RESOLVEDVALUESET_NAMESPACE, 
+//					GET_RESOLVEDVALUESET_SUMMARIES,
+//					parameters,
+//					ResolvedValueSetDirectoryEntry.class);
 		
 		boolean moreResults = results.size() > page.getMaxToReturn();
 		

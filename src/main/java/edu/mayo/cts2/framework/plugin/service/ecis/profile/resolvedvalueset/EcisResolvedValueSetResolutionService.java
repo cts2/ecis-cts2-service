@@ -33,7 +33,6 @@ import javax.annotation.Resource;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Component;
-import org.springframework.util.Assert;
 
 import edu.mayo.cts2.framework.model.command.Page;
 import edu.mayo.cts2.framework.model.command.ResolvedFilter;
@@ -41,13 +40,18 @@ import edu.mayo.cts2.framework.model.core.EntitySynopsis;
 import edu.mayo.cts2.framework.model.core.MatchAlgorithmReference;
 import edu.mayo.cts2.framework.model.core.PredicateReference;
 import edu.mayo.cts2.framework.model.core.PropertyReference;
+import edu.mayo.cts2.framework.model.core.SortCriteria;
 import edu.mayo.cts2.framework.model.directory.DirectoryResult;
+import edu.mayo.cts2.framework.model.entity.EntityDescription;
+import edu.mayo.cts2.framework.model.entity.EntityDirectoryEntry;
 import edu.mayo.cts2.framework.model.valuesetdefinition.ResolvedValueSet;
 import edu.mayo.cts2.framework.model.valuesetdefinition.ResolvedValueSetHeader;
+import edu.mayo.cts2.framework.plugin.service.ecis.profile.AbstractService;
 import edu.mayo.cts2.framework.service.meta.StandardMatchAlgorithmReference;
 import edu.mayo.cts2.framework.service.meta.StandardModelAttributeReference;
 import edu.mayo.cts2.framework.service.profile.resolvedvalueset.ResolvedValueSetResolutionService;
 import edu.mayo.cts2.framework.service.profile.resolvedvalueset.name.ResolvedValueSetReadId;
+import edu.mayo.cts2.framework.service.profile.valuesetdefinition.ResolvedValueSetResolutionEntityQuery;
 import edu.mayo.cts2.framework.service.profile.valuesetdefinition.ResolvedValueSetResult;
 
 /**
@@ -62,17 +66,7 @@ public class EcisResolvedValueSetResolutionService extends AbstractService
 	private final static String RESOLVEDVALUESET_NAMESPACE = "resolvedValueSet";
 	private final static String GET_RESOLVEDVALUESET_ENTITYSYNOPSIS = "getAllEntitySynonpsisOfValueSet";
 	private final static String GET_RESOLVEDVALUESET_HEADER = "getResolvedValueSetHeader";
-	@Resource
-	private RdfDao rdfDao;
-	
-	@Resource 
-	private BioportalRestClient bioportalRestClient;
-	
-	@Resource
-	private IdService idService;
-	
-	@Resource
-	private EcisRestResolvedValueSetTransform bioportalRestResolvedValueSetTransform;
+
 
 	@Override
 	public ResolvedValueSetResult getResolution(
@@ -81,9 +75,11 @@ public class EcisResolvedValueSetResolutionService extends AbstractService
 			Page page) {
 		
 		String id = identifier.getLocalName();
-		String ontologyId = this.idService.getOntologyIdForId(identifier.getLocalName());
+		String ontologyId = null;
+		//this.idService.getOntologyIdForId(identifier.getLocalName());
 		String acronym = identifier.getValueSet().getName();
-		String expectedAcronym = this.idService.getAcronymForOntologyId(ontologyId);
+		String expectedAcronym = null;
+		//this.idService.getAcronymForOntologyId(ontologyId);
 		
 		//acronym mismatch - this is caused if the 'valueSet' restriction is wrong.
 		if(! acronym.equals(expectedAcronym)){
@@ -97,14 +93,13 @@ public class EcisResolvedValueSetResolutionService extends AbstractService
 			parameters.put("id", id);
 			parameters.put("acronym", acronym);
 			
-			SparqlUtils.setLimitOffsetParams(parameters, page);
 			
-			List<EntitySynopsis> results = 
-				this.rdfDao.selectForList(
-						RESOLVEDVALUESET_NAMESPACE, 
-						GET_RESOLVEDVALUESET_ENTITYSYNOPSIS, 
-						parameters, 
-						EntitySynopsis.class);
+			List<EntitySynopsis> results = null;
+//				this.rdfDao.selectForList(
+//						RESOLVEDVALUESET_NAMESPACE, 
+//						GET_RESOLVEDVALUESET_ENTITYSYNOPSIS, 
+//						parameters, 
+//						EntitySynopsis.class);
 			
 			if(results == null){
 				return null;
@@ -120,35 +115,39 @@ public class EcisResolvedValueSetResolutionService extends AbstractService
 					this.getResolvedValueSetHeader(id), 
 					results, 
 					!moreResults);
-		} else {
-			SuccessBean successBean = 
-				this.bioportalRestClient.searchEntities(ontologyId, filterComponent, page);
-			
-			DirectoryResult<EntitySynopsis> result = 
-				this.bioportalRestResolvedValueSetTransform.successBeanToEntityEntitySynopsis(successBean);
-			
-			return new ResolvedValueSetResult(
-					this.getResolvedValueSetHeader(id), 
-					result.getEntries(), 
-					result.isAtEnd());
-		}
+		} 
+		return null;
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.mayo.cts2.framework.service.profile.resolvedvalueset.ResolvedValueSetResolutionService#getEntities(edu.mayo.cts2.framework.service.profile.resolvedvalueset.name.ResolvedValueSetReadId, edu.mayo.cts2.framework.service.profile.valuesetdefinition.ResolvedValueSetResolutionEntityQuery, edu.mayo.cts2.framework.model.core.SortCriteria, edu.mayo.cts2.framework.model.command.Page)
+	 */
+	@Override
+	public ResolvedValueSetResult<EntityDirectoryEntry> getEntities(
+			ResolvedValueSetReadId identifier,
+			ResolvedValueSetResolutionEntityQuery query,
+			SortCriteria sortCriteria, Page page) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.mayo.cts2.framework.service.profile.resolvedvalueset.ResolvedValueSetResolutionService#getEntityList(edu.mayo.cts2.framework.service.profile.resolvedvalueset.name.ResolvedValueSetReadId, edu.mayo.cts2.framework.service.profile.valuesetdefinition.ResolvedValueSetResolutionEntityQuery, edu.mayo.cts2.framework.model.core.SortCriteria, edu.mayo.cts2.framework.model.command.Page)
+	 */
+	@Override
+	public DirectoryResult<EntityDescription> getEntityList(
+			ResolvedValueSetReadId identifier,
+			ResolvedValueSetResolutionEntityQuery query,
+			SortCriteria sortCriteria, Page page) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	protected ResolvedValueSetHeader getResolvedValueSetHeader(String id){
 		Map<String,Object> parameters = new HashMap<String,Object>();
 		parameters.put("id", id);
 		
-		List<ResolvedValueSetHeader> list = this.rdfDao.selectForList(
-					RESOLVEDVALUESET_NAMESPACE, 
-					GET_RESOLVEDVALUESET_HEADER, 
-					parameters, 
-					ResolvedValueSetHeader.class);
-		
-		Assert.isTrue(list != null && list.size() == 1, 
-					"Error finding ResolvedValueSetHeader for: " +
-						id);
-		
-		return list.get(0);
+		return null;
 	}
 
 	@Override

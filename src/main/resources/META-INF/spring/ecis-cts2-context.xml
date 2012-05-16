@@ -12,12 +12,12 @@
 
 	<bean class="edu.mayo.cts2.framework.util.spring.UrlConstructorSpringFactory" />
 
-<!--     <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"> -->
-<!--         <property name="driverClass" value="${jdbcDriverClass}"/> -->
-<!--         <property name="jdbcUrl" value="${jdbcUrl}"/> -->
-<!--         <property name="user" value="${username}"/> -->
-<!--         <property name="password" value="${password}"/> -->
-<!--     </bean> -->
+     <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"> 
+         <property name="driverClass" value="${jdbcDriverClass}"/> 
+         <property name="jdbcUrl" value="${jdbcUrl}"/> 
+         <property name="user" value="${username}"/> 
+         <property name="password" value="${password}"/> 
+    </bean> 
 
 	<bean id="transactionManager"
 		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">

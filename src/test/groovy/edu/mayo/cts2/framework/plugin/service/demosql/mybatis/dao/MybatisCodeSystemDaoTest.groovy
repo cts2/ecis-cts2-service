@@ -12,7 +12,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import edu.mayo.cts2.framework.plugin.service.ecis.mybatis.dao.MybatisCodeSystemDao;
 
 @RunWith(SpringJUnit4ClassRunner)
-@ContextConfiguration(locations=["/test-demo-sql-context.xml"])
+@ContextConfiguration(locations=["/test-ecis-cts2-context.xml"])
 class MybatisCodeSystemDaoTest {
 
 	@Resource
