@@ -8,12 +8,12 @@
 		<version>0.7.2-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>demo-sql-service</artifactId>
+	<artifactId>ecis-cts2-service</artifactId>
 	<version>0.1.0-SNAPSHOT</version>
 	<packaging>bundle</packaging>
 
-	<description>A Demo SQL-backed CTS2 Framework Service Plugin.</description>
-	<name>Demo SQL Plugin</name>
+	<description>A ECIS SQL-backed CTS2 Framework Service Plugin.</description>
+	<name>ECIS SQL Plugin</name>
 
 	<inceptionYear>2012</inceptionYear>
 	<licenses>
@@ -194,6 +194,7 @@
 			<groupId>edu.mayo.cts2.framework</groupId>
 			<artifactId>service</artifactId>
 			<version>${develpment.framework.version}</version>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
@@ -208,6 +209,7 @@
 			<groupId>edu.mayo.cts2.framework</groupId>
 			<artifactId>plugin-util</artifactId>
 			<version>${develpment.framework.version}</version>
+			<scope>provided</scope>
 		</dependency>
 
 	</dependencies>

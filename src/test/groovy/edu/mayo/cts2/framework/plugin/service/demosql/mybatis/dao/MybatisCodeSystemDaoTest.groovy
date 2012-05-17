@@ -1,15 +1,22 @@
 package edu.mayo.cts2.framework.plugin.service.demosql.mybatis.dao;
 
-import javax.annotation.Resource;
-import javax.sql.DataSource;
+import javax.annotation.Resource
+import javax.sql.DataSource
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import static junit.framework.Assert.*
+
+import org.junit.After
+import org.junit.Before
+import org.junit.Test
 import org.junit.runner.RunWith;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.core.io.ClassPathResource
+import org.springframework.jdbc.core.JdbcTemplate
+import org.springframework.jdbc.core.simple.SimpleJdbcTemplate
+import org.springframework.test.context.ContextConfiguration
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
+import org.springframework.test.jdbc.SimpleJdbcTestUtils
 
-import edu.mayo.cts2.framework.plugin.service.ecis.mybatis.dao.MybatisCodeSystemDao;
+import edu.mayo.cts2.framework.plugin.service.ecis.mybatis.dao.MybatisCodeSystemDao
 
 @RunWith(SpringJUnit4ClassRunner)
 @ContextConfiguration(locations=["/test-ecis-cts2-context.xml"])
