@@ -13,7 +13,25 @@
 
 	<resultMap id="resolvedValueSetHeaderResultMap" type="edu.mayo.cts2.framework.model.valuesetdefinition.ResolvedValueSetHeader">
 		<association property="resolutionOf"  resultMap="resolutionOfResultMap" />
-		<association property="resolvedUsingCodeSystemAsReference" resultMap="codeSystemVersionReferenceResultMap"  />
+		<association property="_resolvedUsingCodeSystemList"  resultMap="codeSystemVersionReferenceResultMap"  />
+	</resultMap>
+	
+ <resultMap id="codeSystemVersionReferenceResultMap" 
+		type="edu.mayo.cts2.framework.model.core.CodeSystemVersionReference">
+		<association property="version" resultMap="currentVersionVersionNameAndMeaningReferenceResultMap"/>
+		<association property="codeSystem" resultMap="currentVersionCodeSystemNameAndMeaningReferenceResultMap"/>
+	</resultMap>
+	
+	<resultMap id="currentVersionCodeSystemNameAndMeaningReferenceResultMap" 
+		type="edu.mayo.cts2.framework.model.core.CodeSystemReference">
+		<result property="uri" column="codeSystemUri"  />
+		<result property="content" column="codeSystemName" />
+	</resultMap>
+
+	<resultMap id="currentVersionVersionNameAndMeaningReferenceResultMap" 
+		type="edu.mayo.cts2.framework.model.core.NameAndMeaningReference">
+		<result property="uri" column="codeSystemVersionUri"  />
+		<result property="content" column="codeSystemVersionName" />
 	</resultMap>
 	
 	<resultMap id="resolutionOfResultMap" type="edu.mayo.cts2.framework.model.core.ValueSetDefinitionReference">
@@ -56,9 +74,9 @@
 	
 	<select id="getResolvedValueSetHeader" parameterType="string"
 		resultMap="resolvedValueSetHeaderResultMap">
-		SELECT   cs.CODINGSCHEMENAME AS CodeSystemName, cs.CODINGSCHEMEURI AS CodeSystemUri, 
-		cs.REPRESENTSVERSION AS CodeSystemVersionName, cs.CODINGSCHEMEURI AS CodeSystemVersionUri, 
-		vsd.VALUESETDEFURI AS ValueSetDefinitionUri, vsd.VALUESETDEFNAME AS ValueSetDefinitionName
+		SELECT   cs.CODINGSCHEMENAME AS codeSystemName, cs.CODINGSCHEMEURI AS codeSystemUri, 
+		cs.REPRESENTSVERSION AS codeSystemVersionName, cs.CODINGSCHEMEURI AS codeSystemVersionUri, 
+		vsd.VALUESETDEFURI AS valueSetDefinitionUri, vsd.VALUESETDEFNAME AS valueSetDefinitionName
 		FROM  VALUESETDEFINITION vsd, CODINGSCHEME cs
 		WHERE 
 		vsd.DEFAULTCODINGSCHEME= cs.CODINGSCHEMENAME AND
