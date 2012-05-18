@@ -46,6 +46,7 @@ import edu.mayo.cts2.framework.model.entity.EntityDescription;
 import edu.mayo.cts2.framework.model.entity.EntityDirectoryEntry;
 import edu.mayo.cts2.framework.model.valuesetdefinition.ResolvedValueSet;
 import edu.mayo.cts2.framework.model.valuesetdefinition.ResolvedValueSetHeader;
+import edu.mayo.cts2.framework.plugin.service.ecis.mybatis.dao.MybatisResolvedValueSetDao;
 import edu.mayo.cts2.framework.plugin.service.ecis.profile.AbstractService;
 import edu.mayo.cts2.framework.service.meta.StandardMatchAlgorithmReference;
 import edu.mayo.cts2.framework.service.meta.StandardModelAttributeReference;
@@ -62,11 +63,8 @@ import edu.mayo.cts2.framework.service.profile.valuesetdefinition.ResolvedValueS
 @Component
 public class EcisResolvedValueSetResolutionService extends AbstractService 
 	implements ResolvedValueSetResolutionService {
-	
-	private final static String RESOLVEDVALUESET_NAMESPACE = "resolvedValueSet";
-	private final static String GET_RESOLVEDVALUESET_ENTITYSYNOPSIS = "getAllEntitySynonpsisOfValueSet";
-	private final static String GET_RESOLVEDVALUESET_HEADER = "getResolvedValueSetHeader";
-
+	@Resource
+	MybatisResolvedValueSetDao resolvedValueSetDao;
 
 	@Override
 	public ResolvedValueSetResult getResolution(
@@ -75,31 +73,11 @@ public class EcisResolvedValueSetResolutionService extends AbstractService
 			Page page) {
 		
 		String id = identifier.getLocalName();
-		String ontologyId = null;
-		//this.idService.getOntologyIdForId(identifier.getLocalName());
-		String acronym = identifier.getValueSet().getName();
-		String expectedAcronym = null;
-		//this.idService.getAcronymForOntologyId(ontologyId);
+		String definition = identifier.getValueSet().getName();
 		
-		//acronym mismatch - this is caused if the 'valueSet' restriction is wrong.
-		if(! acronym.equals(expectedAcronym)){
-			return null;
-		}
-		
-		if(CollectionUtils.isEmpty(filterComponent)){
-			
-			Map<String,Object> parameters = new HashMap<String,Object>();
-			parameters.put("ontologyId", ontologyId);
-			parameters.put("id", id);
-			parameters.put("acronym", acronym);
-			
-			
-			List<EntitySynopsis> results = null;
-//				this.rdfDao.selectForList(
-//						RESOLVEDVALUESET_NAMESPACE, 
-//						GET_RESOLVEDVALUESET_ENTITYSYNOPSIS, 
-//						parameters, 
-//						EntitySynopsis.class);
+		if(CollectionUtils.isEmpty(filterComponent)){			
+			List<EntitySynopsis> results = resolvedValueSetDao.getResolvedValueSetSynopsis(definition);
+
 			
 			if(results == null){
 				return null;

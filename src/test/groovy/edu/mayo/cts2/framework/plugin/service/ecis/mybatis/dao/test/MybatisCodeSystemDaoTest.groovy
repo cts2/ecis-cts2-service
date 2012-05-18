@@ -1,4 +1,4 @@
-package edu.mayo.cts2.framework.plugin.service.demosql.mybatis.dao;
+package edu.mayo.cts2.framework.plugin.service.ecis.mybatis.dao.test;
 
 import javax.annotation.Resource
 import javax.sql.DataSource
@@ -28,28 +28,19 @@ class MybatisCodeSystemDaoTest {
 	@Resource
 	DataSource datasource
 
-	@Before
-	void loadData(){
-		SimpleJdbcTestUtils.executeSqlScript(
-			new SimpleJdbcTemplate(datasource), new ClassPathResource("database/test-dataload.sql"), false)
-	}
-	
-	@After
-	void dropData(){
-		new JdbcTemplate(datasource).execute("DROP TABLE codesystems")
-	}
+
 	
 	@Test
 	void  TestGetCodeSystemByName(){
-		def codeSystem = dao.getCodeSystemByName("myTest");
+		def codeSystem = dao.getCodeSystemByName("CKS_Terminology");
 		
-		assertEquals "myTest", codeSystem.getCodeSystemName()
+		assertEquals "CKS_Terminology", codeSystem.getCodeSystemName()
 	}
 	
 	@Test
 	void  TestGetCodeSystemByUri(){
-		def codeSystem = dao.getCodeSystemByUri("http://test/cs");
+		def codeSystem = dao.getCodeSystemByUri("urn:uuid:29fd187c-1f56-4334-8b90-0d03c96a7b71");
 		
-		assertEquals "http://test/cs", codeSystem.getAbout()
+		assertEquals "urn:uuid:29fd187c-1f56-4334-8b90-0d03c96a7b71", codeSystem.getAbout()
 	}
 }

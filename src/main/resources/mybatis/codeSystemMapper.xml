@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.mayo.cts2.framework.plugin.service.ecis.mybatis.dao.MybatisCodeSystemDao">
+
+	<resultMap id="codeSystemCatalogEntryResultMap"
+		type="edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntry">
+		<result property="codeSystemName" column="codeSystemName" />
+		<result property="about" column="codeSystemUri" />
+	</resultMap>
+	
+    <resultMap id="codeSystemVersionReferenceResultMap" 
+		type="edu.mayo.cts2.framework.model.core.CodeSystemVersionReference">
+		<association property="version" resultMap="currentVersionVersionNameAndMeaningReferenceResultMap"/>
+		<association property="codeSystem" resultMap="currentVersionCodeSystemNameAndMeaningReferenceResultMap"/>
+	</resultMap>
+	
+	<resultMap id="currentVersionCodeSystemNameAndMeaningReferenceResultMap" 
+		type="edu.mayo.cts2.framework.model.core.CodeSystemReference">
+		<result property="uri" column="codeSystemUri"  />
+		<result property="content" column="codeSystemName" />
+	</resultMap>
+
+	<resultMap id="currentVersionVersionNameAndMeaningReferenceResultMap" 
+		type="edu.mayo.cts2.framework.model.core.NameAndMeaningReference">
+		<result property="uri" column="codeSystemVersionUri"  />
+		<result property="content" column="codeSystemVersionName" />
+	</resultMap>
+	
+	<select id="getCodeSystemByName" parameterType="string"
+		resultMap="codeSystemCatalogEntryResultMap">
+		
+		SELECT 
+			CODINGSCHEMENAME as codesystemname,
+			CODINGSCHEMEURI as uri
+		FROM
+		    ecis.CODINGSCHEME 
+		WHERE 
+			CODINGSCHEMENAME = #{codeSystemName}
+			
+	</select>
+	
+	<select id="getCodeSystemByUri" parameterType="string"
+		resultMap="codeSystemCatalogEntryResultMap">
+		
+				
+		SELECT 
+			CODINGSCHEMENAME as codesystemname,
+			CODINGSCHEMEURI as uri
+		FROM
+		    ecis.CODINGSCHEME 
+		WHERE 
+			CODINGSCHEMEURI = #{uri}
+			
+	</select>
+	
+</mapper>

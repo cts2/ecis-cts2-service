@@ -5,6 +5,7 @@
  
 <configuration>
     <mappers>
-        <mapper resource="mybatis/testMapper.xml"/>
+        <mapper resource="mybatis/codeSystemMapper.xml"/>
+        <mapper resource="mybatis/resolvedValueSetMapper.xml"/>
     </mappers>
 </configuration>

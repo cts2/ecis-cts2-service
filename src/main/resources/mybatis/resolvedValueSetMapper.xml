@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.mayo.cts2.framework.plugin.service.ecis.mybatis.dao.MybatisResolvedValueSetDao">
+
+	<resultMap id="resolvedValueSetDirectoryEntryResultMap"
+		type="edu.mayo.cts2.framework.model.valuesetdefinition.ResolvedValueSetDirectoryEntry">
+		<result property="resolvedValueSetUri" column="resolvedValueSetUri" />
+		<result property="resourceName" column="resolvedValueSetLocalName" />
+		<association property="resolvedHeader" resultMap="resolvedValueSetHeaderResultMap" />
+	</resultMap>
+
+	<resultMap id="resolvedValueSetHeaderResultMap" type="edu.mayo.cts2.framework.model.valuesetdefinition.ResolvedValueSetHeader">
+		<association property="resolutionOf"  resultMap="resolutionOfResultMap" />
+		<association property="resolvedUsingCodeSystemAsReference" resultMap="codeSystemVersionReferenceResultMap"  />
+	</resultMap>
+	
+	<resultMap id="resolutionOfResultMap" type="edu.mayo.cts2.framework.model.core.ValueSetDefinitionReference">
+		<association property="valueSet" resultMap="valueSetReferenceResultMap" />
+		<association  property="valueSetDefinition" resultMap="valueSetDefinitionReferenceResultMap"/>
+	</resultMap>
+	
+	<resultMap id="valueSetDefinitionReferenceResultMap" type="edu.mayo.cts2.framework.model.core.NameAndMeaningReference">
+		<result property="content" column="valueSetDefinitionName" />
+		<result property="uri" column="valueSetDefinitionUri"/>
+	</resultMap>
+	
+	<resultMap id="valueSetReferenceResultMap" type="edu.mayo.cts2.framework.model.core.ValueSetReference">
+		<result property="content" column="valueSetName" />
+		<result property="uri" column="valueSetUri"/>
+	</resultMap>
+	
+	<resultMap id="entitySynonpsisResultMap" type="edu.mayo.cts2.framework.model.core.EntitySynopsis">
+		<result property="uri" column="uri"/>
+		<result property="href" column="href"/>
+		<result property="namespace" column="entityNamespace"  />
+		<result property="name" column="entityName"/>
+		<result property="designation" column="designation" />
+	</resultMap>
+
+	<select id="getResolvedValueSetSynopsis" parameterType="string"
+		resultMap="entitySynonpsisResultMap">
+		
+		SELECT   eae.SOURCEENTITYCODENAMESPACE AS entityNamespace, eae.SOURCEENTITYCODE AS entityName , e.DESCRIPTION AS designation
+        FROM  ENTITYASSNSTOENTITY eae, ASSOCIATIONPREDICATE ap, VSDENTRY vsd, ENTITY e
+        WHERE 
+        vsd.ENTITYCODE= eae.TARGETENTITYCODE AND
+        vsd.REFERENCEASSOCIATION= ap.ASSOCIATIONNAME AND
+        ap.ASSOCIATIONPREDICATEGUID=  eae.ASSOCIATIONPREDICATEGUID AND
+        eae.SOURCEENTITYCODE= e.ENTITYCODE AND
+        eae.SOURCEENTITYCODENAMESPACE= e.ENTITYCODENAMESPACE AND
+        vsd.VALUESETDEFGUID= #{definition_id}
+			
+	</select>
+	
+	<select id="getResolvedValueSetHeader" parameterType="string"
+		resultMap="resolvedValueSetHeaderResultMap">
+		SELECT   cs.CODINGSCHEMENAME AS CodeSystemName, cs.CODINGSCHEMEURI AS CodeSystemUri, 
+		cs.REPRESENTSVERSION AS CodeSystemVersionName, cs.CODINGSCHEMEURI AS CodeSystemVersionUri, 
+		vsd.VALUESETDEFURI AS ValueSetDefinitionUri, vsd.VALUESETDEFNAME AS ValueSetDefinitionName
+		FROM  VALUESETDEFINITION vsd, CODINGSCHEME cs
+		WHERE 
+		vsd.DEFAULTCODINGSCHEME= cs.CODINGSCHEMENAME AND
+		vsd.VALUESETDEFGUID= #{definition_id}	
+	</select>
+
+</mapper>
