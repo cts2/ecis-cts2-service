@@ -33,7 +33,7 @@
 		
 		SELECT 
 			CODINGSCHEMENAME as codesystemname,
-			CODINGSCHEMEURI as uri
+			CODINGSCHEMEURI as codeSystemUri
 		FROM
 		    ecis.CODINGSCHEME 
 		WHERE 
@@ -47,12 +47,23 @@
 				
 		SELECT 
 			CODINGSCHEMENAME as codesystemname,
-			CODINGSCHEMEURI as uri
+			CODINGSCHEMEURI as codeSystemUri
 		FROM
 		    ecis.CODINGSCHEME 
 		WHERE 
 			CODINGSCHEMEURI = #{uri}
 			
+	</select>
+
+	<select id="getCodeSystemVersionReferenceByValueSetDefinition" parameterType="string"
+		resultMap="codeSystemVersionReferenceResultMap">
+		SELECT   cs.CODINGSCHEMENAME AS codeSystemName, cs.CODINGSCHEMEURI AS codeSystemUri, 
+		cs.REPRESENTSVERSION AS codeSystemVersionName, cs.CODINGSCHEMEURI AS codeSystemVersionUri, 
+		vsd.VALUESETDEFURI AS valueSetDefinitionUri, vsd.VALUESETDEFNAME AS valueSetDefinitionName
+		FROM  VALUESETDEFINITION vsd, CODINGSCHEME cs
+		WHERE 
+		vsd.DEFAULTCODINGSCHEME= cs.CODINGSCHEMENAME AND
+		vsd.VALUESETDEFGUID= #{definition_id}	
 	</select>
 	
 </mapper>

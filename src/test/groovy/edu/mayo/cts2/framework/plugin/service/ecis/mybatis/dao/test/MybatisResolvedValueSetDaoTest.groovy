@@ -5,6 +5,7 @@ import javax.sql.DataSource
 
 import static junit.framework.Assert.*
 
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration
@@ -22,6 +23,12 @@ class MybatisResolvedValueSetTest {
 	@Resource
 	DataSource datasource
 	
+	@Before
+	void setLogging() {
+		org.apache.ibatis.logging.LogFactory.useLog4JLogging();
+	}
+	
+	
 	@Test
 	void  testGetResolvedValueSetHeader(){
 		def listResolvedVSH = dao.getResolvedValueSetHeader("9a06da7e-cab5-e724-e040-1c03053c10ef");
@@ -35,4 +42,14 @@ class MybatisResolvedValueSetTest {
 		
 		assertTrue listEntitySynopsys.size() > 0
 	}
+	
+	
+	@Test
+	void  testGetCodeSystemVersionReferenceByValueSetDefinition(){
+		def listCodeSystemVersionRefs = dao.getCodeSystemVersionReferenceListByValueSetDefinition("9a06da7e-cab5-e724-e040-1c03053c10ef");
+		
+		assertTrue listCodeSystemVersionRefs.size() > 0
+	}
+	
+	
 }
