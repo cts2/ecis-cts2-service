@@ -8,7 +8,7 @@
 		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd">
 
 	<context:component-scan
-		base-package="edu.mayo.cts2.framework.plugin.service.demosql" />
+		base-package="edu.mayo.cts2.framework.plugin.service.ecis" />
 
 	<bean class="edu.mayo.cts2.framework.util.spring.UrlConstructorSpringFactory" />
 

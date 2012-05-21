@@ -5,6 +5,7 @@ import javax.sql.DataSource
 
 import static junit.framework.Assert.*
 
+import org.apache.log4j.Logger
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith;
@@ -22,7 +23,7 @@ class MybatisResolvedValueSetTest {
 	
 	@Resource
 	DataSource datasource
-	
+	static final Logger logger = Logger.getLogger(MybatisResolvedValueSetTest.class);
 	@Before
 	void setLogging() {
 		org.apache.ibatis.logging.LogFactory.useLog4JLogging();
@@ -31,6 +32,10 @@ class MybatisResolvedValueSetTest {
 	
 	@Test
 	void  testGetResolvedValueSetHeader(){
+		logger.info("testGetResolvedValueSetHeader");
+//		logger.error("testGetResolvedValueSetHeader");
+//		print("testGetResolvedValueSetHeader");
+//		System.out.println("testGetResolvedValueSetHeader");
 		def listResolvedVSH = dao.getResolvedValueSetHeader("9a06da7e-cab5-e724-e040-1c03053c10ef");
 		
 		assertTrue listResolvedVSH.size() > 0
