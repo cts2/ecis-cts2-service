@@ -66,4 +66,13 @@
 		vsd.VALUESETDEFGUID= #{definition_id}	
 	</select>
 	
+	<select id="getCodeSystemVersionReferenceByName" parameterType="string"
+		resultMap="codeSystemVersionReferenceResultMap">
+		SELECT   CODINGSCHEMENAME AS codeSystemName, CODINGSCHEMEURI AS codeSystemUri, 
+		REPRESENTSVERSION AS codeSystemVersionName, CODINGSCHEMEURI AS codeSystemVersionUri
+		FROM  CODINGSCHEME 
+		WHERE CODINGSCHEMENAME= #{codeSystemName}
+	</select>
+	
+	
 </mapper>
