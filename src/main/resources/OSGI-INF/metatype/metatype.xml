@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metatype:MetaData xmlns:metatype="http://www.osgi.org/xmlns/metatype/v1.0.0">
 	<OCD description="Namespace Manager" name="Namespace Manager" id="edu.mayo.cts2.framework.plugin.service.ecis">
-		<AD name="JDBC URL" id="jdbcUrl" required="true" type="String"  />
-		<AD name="JDBC Driver Class" id="jdbcDriverClass" required="true" type="String"  />
-		<AD name="JDBC User Name" id="username" required="true" type="String"  />
-		<AD name="JDBC Password" id="password" required="true" type="Password"  />
+		<AD name="JDBC URL" id="jdbcUrl" required="true" type="jdbc:mysql://bmidev4.mayo.edu:3307/ecis"  />
+		<AD name="JDBC Driver Class" id="jdbcDriverClass" required="true" type="com.mysql.jdbc.Driver"  />
+		<AD name="JDBC User Name" id="username" required="true" type="lexgrid"  />
+		<AD name="JDBC Password" id="password" required="true" type="lexgrid"  />
 	</OCD>
 	<Designate pid="edu.mayo.cts2.framework.plugin.service.ecis">
         <Object ocdref="edu.mayo.cts2.framework.plugin.service.ecis"/>
