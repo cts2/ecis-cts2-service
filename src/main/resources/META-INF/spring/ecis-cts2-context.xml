@@ -26,7 +26,7 @@
 
 	<!-- This will scan every file in the 'basePackage' package and turn each
 	interface into a MyBatis DAO -->
-	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+	<bean class="edu.mayo.cts2.framework.plugin.service.ecis.mybatis.osgi.MapperScannerConfigurer">
 		<property name="basePackage"
 			value="edu.mayo.cts2.framework.plugin.service.ecis.mybatis.dao" />
 		<property name="sqlSessionFactory" ref="sqlSessionFactory" />

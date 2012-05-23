@@ -70,12 +70,34 @@
 							!com.sun.*,
 							!com.caucho.*,
 							!javax.el,
+							!javax.jms,
+							!javax.jms.*,
 							!javax.faces*,
 							!javax.portlet*,
 							!javax.xml.rpc*,
 							!javax.servlet.*,
+							!net.sf.cglib.*,
+							!org.apache.avalon.*,
+							!org.apache.log,
+							!org.apache.log.*,
+							!com.ibm,
+							!com.ibm.*,
+							!org.jboss.*,
+							!com.jamonapi,
+							!javax.jmdns,
+							!javax.resource,
+							!javax.resource.*,
+							!org.apache.commons.pool,
+							!org.apache.commons.pool.*,
+							!org.apache.derby,
+							!org.apache.derby.*,
+							!org.aspectj,
+							!org.aspectj.*,
+							!javax.ejb,
+							!javax.ejb.*;
 							edu.mayo.cts2.*,
 							edu.mayo.cts2.framework.core.xml,
+							edu.mayo.cts2.framework.core.plugin,
 							org.springframework.context.config,
 							edu.mayo.cts2.framework.model.service.association,
 							edu.mayo.cts2.framework.model.service.codesystem,
@@ -92,11 +114,24 @@
 							edu.mayo.cts2.framework.service.provider,
 							*
 						</Import-Package>
-						<!-- <Embed-Transitive>true</Embed-Transitive> -->
-						<!-- <Embed-Dependency>!org.springframework*,!com.ibm.*,*</Embed-Dependency> -->
+						<Embed-Transitive>true</Embed-Transitive>
+						<Embed-Dependency>
+						!stax-api,
+						!xercesImpl,
+						!xml-apis,
+						!spring-core,
+						!spring-beans,
+						!spring-asm,
+						!spring-aop,
+						!spring-context,
+						!spring-expression,
+						!commons-logging,
+						!aopalliance,
+						*;scope=compile|runtime;inline=false
+						</Embed-Dependency>
 						<Spring-Context>*;timeout:=60</Spring-Context>
 						<_exportcontents>*</_exportcontents>
-						<!-- <_nouses>true</_nouses> -->
+						<_nouses>true</_nouses>
 					</instructions>
 				</configuration>
 			</plugin>
@@ -210,6 +245,13 @@
 			<scope>provided</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>edu.mayo.cts2.framework</groupId>
+			<artifactId>core</artifactId>
+			<version>${develpment.framework.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		
 		<dependency>
 			<groupId>edu.mayo.cts2.framework</groupId>
 			<artifactId>core</artifactId>

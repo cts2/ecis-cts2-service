@@ -13,7 +13,7 @@
 	
 	<osgi:reference id="cts2Marshaller" interface="edu.mayo.cts2.framework.core.xml.Cts2Marshaller"/>
 	
-	<osgi:service ref="ecisSqlServiceProvider" interface="edu.mayo.cts2.framework.service.provider.ServiceProvider"/>
+	<osgi:service ref="ecisServiceProvider" interface="edu.mayo.cts2.framework.service.provider.ServiceProvider"/>
 	
 	<osgix:cm-properties id="props" persistent-id="edu.mayo.cts2.framework.plugin.service.ecis"/>
 
