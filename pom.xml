@@ -94,7 +94,9 @@
 							!org.aspectj,
 							!org.aspectj.*,
 							!javax.ejb,
-							!javax.ejb.*;
+							!javax.ejb.*,
+							!javax.mail,
+							!javax.mail.*,
 							edu.mayo.cts2.*,
 							edu.mayo.cts2.framework.core.xml,
 							edu.mayo.cts2.framework.core.plugin,
