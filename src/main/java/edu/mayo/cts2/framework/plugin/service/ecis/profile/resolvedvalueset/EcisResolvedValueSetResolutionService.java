@@ -79,7 +79,7 @@ public class EcisResolvedValueSetResolutionService extends AbstractService
 			List<EntitySynopsis> results = resolvedValueSetDao.getResolvedValueSetSynopsis(definition);
 
 			
-			if(results == null){
+			if(results == null|| results.isEmpty()){
 				return null;
 			}
 			
