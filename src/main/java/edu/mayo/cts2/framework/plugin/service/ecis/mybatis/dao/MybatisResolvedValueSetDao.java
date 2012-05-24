@@ -12,7 +12,7 @@ import edu.mayo.cts2.framework.plugin.service.ecis.mybatis.pagination.LimitOffse
 public interface MybatisResolvedValueSetDao {
 
 	public List<EntitySynopsis> getResolvedValueSetSynopsis(
-			@Param("definition_id") String definition_id, 
+			@Param("valueSetName") String valueSetName, 
 			@Param("limitOffset") LimitOffset limitOffset);
     
 	public ResolvedValueSetHeader getResolvedValueSetHeader(String definition_id);

@@ -21,7 +21,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.mayo.cts2.framework.plugin.service.ecis.profile.resolvedvalueset;
+package edu.mayo.cts2.framework.plugin.service.ecis.profile.valuesetdefinition;
 
 import java.util.HashSet;
 import java.util.List;
@@ -33,15 +33,14 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Component;
 
 import edu.mayo.cts2.framework.model.command.Page;
-import edu.mayo.cts2.framework.model.command.ResolvedFilter;
+import edu.mayo.cts2.framework.model.command.ResolvedReadContext;
 import edu.mayo.cts2.framework.model.core.EntitySynopsis;
 import edu.mayo.cts2.framework.model.core.MatchAlgorithmReference;
 import edu.mayo.cts2.framework.model.core.PredicateReference;
 import edu.mayo.cts2.framework.model.core.PropertyReference;
 import edu.mayo.cts2.framework.model.core.SortCriteria;
-import edu.mayo.cts2.framework.model.directory.DirectoryResult;
-import edu.mayo.cts2.framework.model.entity.EntityDescription;
 import edu.mayo.cts2.framework.model.entity.EntityDirectoryEntry;
+import edu.mayo.cts2.framework.model.service.core.NameOrURI;
 import edu.mayo.cts2.framework.model.valuesetdefinition.ResolvedValueSet;
 import edu.mayo.cts2.framework.model.valuesetdefinition.ResolvedValueSetHeader;
 import edu.mayo.cts2.framework.plugin.service.ecis.mybatis.dao.MybatisResolvedValueSetDao;
@@ -50,10 +49,10 @@ import edu.mayo.cts2.framework.plugin.service.ecis.mybatis.pagination.Pagination
 import edu.mayo.cts2.framework.plugin.service.ecis.profile.AbstractService;
 import edu.mayo.cts2.framework.service.meta.StandardMatchAlgorithmReference;
 import edu.mayo.cts2.framework.service.meta.StandardModelAttributeReference;
-import edu.mayo.cts2.framework.service.profile.resolvedvalueset.ResolvedValueSetResolutionService;
-import edu.mayo.cts2.framework.service.profile.resolvedvalueset.name.ResolvedValueSetReadId;
 import edu.mayo.cts2.framework.service.profile.valuesetdefinition.ResolvedValueSetResolutionEntityQuery;
 import edu.mayo.cts2.framework.service.profile.valuesetdefinition.ResolvedValueSetResult;
+import edu.mayo.cts2.framework.service.profile.valuesetdefinition.ValueSetDefinitionResolutionService;
+import edu.mayo.cts2.framework.service.profile.valuesetdefinition.name.ValueSetDefinitionReadId;
 
 /**
  * The Class BioportalRdfResolvedValueSetResolutionService.
@@ -61,70 +60,11 @@ import edu.mayo.cts2.framework.service.profile.valuesetdefinition.ResolvedValueS
  * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
  */
 @Component
-public class EcisResolvedValueSetResolutionService extends AbstractService 
-	implements ResolvedValueSetResolutionService {
+public class EcisValueSetDefinitionResolutionService extends AbstractService 
+	implements ValueSetDefinitionResolutionService {
 	@Resource
-	MybatisResolvedValueSetDao resolvedValueSetDao;
-
-	@Override
-	public ResolvedValueSetResult<EntitySynopsis> getResolution(
-			ResolvedValueSetReadId identifier,
-			Set<ResolvedFilter> filterComponent, 
-			Page page) {
-		
-		String id = identifier.getLocalName();
-		String definition = identifier.getValueSet().getName();
-		
-		LimitOffset limitOffset = PaginationUtils.getLimitOffset(page);
-		
-		if(CollectionUtils.isEmpty(filterComponent)){			
-			List<EntitySynopsis> results = 
-				resolvedValueSetDao.getResolvedValueSetSynopsis(definition, limitOffset);
-			
-			if(CollectionUtils.isEmpty(results)){
-				return null;
-			} else {
-				return new ResolvedValueSetResult<EntitySynopsis>(
-						this.getResolvedValueSetHeader(id), 
-						results, 
-						PaginationUtils.setAtEnd(results, limitOffset));
-			}
-		} else {
-			throw new UnsupportedOperationException("Filters not yet implemented on ResolvedValueSets.");
-		}
-	}
 	
-	/* (non-Javadoc)
-	 * @see edu.mayo.cts2.framework.service.profile.resolvedvalueset.ResolvedValueSetResolutionService#getEntities(edu.mayo.cts2.framework.service.profile.resolvedvalueset.name.ResolvedValueSetReadId, edu.mayo.cts2.framework.service.profile.valuesetdefinition.ResolvedValueSetResolutionEntityQuery, edu.mayo.cts2.framework.model.core.SortCriteria, edu.mayo.cts2.framework.model.command.Page)
-	 */
-	@Override
-	public ResolvedValueSetResult<EntityDirectoryEntry> getEntities(
-			ResolvedValueSetReadId identifier,
-			ResolvedValueSetResolutionEntityQuery query,
-			SortCriteria sortCriteria, Page page) {
-		throw new UnsupportedOperationException();
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.mayo.cts2.framework.service.profile.resolvedvalueset.ResolvedValueSetResolutionService#getEntityList(edu.mayo.cts2.framework.service.profile.resolvedvalueset.name.ResolvedValueSetReadId, edu.mayo.cts2.framework.service.profile.valuesetdefinition.ResolvedValueSetResolutionEntityQuery, edu.mayo.cts2.framework.model.core.SortCriteria, edu.mayo.cts2.framework.model.command.Page)
-	 */
-	@Override
-	public DirectoryResult<EntityDescription> getEntityList(
-			ResolvedValueSetReadId identifier,
-			ResolvedValueSetResolutionEntityQuery query,
-			SortCriteria sortCriteria, Page page) {
-		throw new UnsupportedOperationException();
-	}
-
-	protected ResolvedValueSetHeader getResolvedValueSetHeader(String id){
-		return this.resolvedValueSetDao.getResolvedValueSetHeader(id);
-	}
-
-	@Override
-	public ResolvedValueSet getResolution(
-			ResolvedValueSetReadId identifier) {
-		throw new UnsupportedOperationException("Cannot resolve the complete ResolvedValueSet yet...");
-	}
+	private MybatisResolvedValueSetDao resolvedValueSetDao;
 
 	@Override
 	public Set<? extends PropertyReference> getSupportedSortReferences() {
@@ -155,5 +95,57 @@ public class EcisResolvedValueSetResolutionService extends AbstractService
 		return returnSet;
 	}
 
+	@Override
+	public ResolvedValueSetResult<EntitySynopsis> resolveDefinition(
+			ValueSetDefinitionReadId definitionId,
+			Set<NameOrURI> codeSystemVersions, 
+			NameOrURI tag,
+			ResolvedValueSetResolutionEntityQuery query,
+			SortCriteria sortCriteria, 
+			ResolvedReadContext readContext,
+			Page page) {
+
+		String valueSetName = definitionId.getValueSet().getName();
+		
+		LimitOffset limitOffset = PaginationUtils.getLimitOffset(page);
+		
+		if(query != null){			
+			List<EntitySynopsis> results = 
+				resolvedValueSetDao.getResolvedValueSetSynopsis(valueSetName, limitOffset);
+			
+			if(CollectionUtils.isEmpty(results)){
+				return null;
+			} else {
+				return new ResolvedValueSetResult<EntitySynopsis>(
+						this.getResolvedValueSetHeader(valueSetName), 
+						results, 
+						PaginationUtils.setAtEnd(results, limitOffset));
+			}
+		} else {
+			throw new UnsupportedOperationException("Filters not yet implemented on ResolvedValueSets.");
+		}
+	}
+
+	@Override
+	public ResolvedValueSetResult<EntityDirectoryEntry> resolveDefinitionAsEntityDirectory(
+			ValueSetDefinitionReadId definitionId,
+			Set<NameOrURI> codeSystemVersions, NameOrURI tag,
+			ResolvedValueSetResolutionEntityQuery query,
+			SortCriteria sortCriteria, ResolvedReadContext readContext,
+			Page page) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public ResolvedValueSet resolveDefinitionAsCompleteSet(
+			ValueSetDefinitionReadId definitionId,
+			Set<NameOrURI> codeSystemVersions, NameOrURI tag,
+			ResolvedReadContext readContext) {
+		throw new UnsupportedOperationException();
+	}
 	
+	protected ResolvedValueSetHeader getResolvedValueSetHeader(String id){
+		return this.resolvedValueSetDao.getResolvedValueSetHeader(id);
+	}
+
 }

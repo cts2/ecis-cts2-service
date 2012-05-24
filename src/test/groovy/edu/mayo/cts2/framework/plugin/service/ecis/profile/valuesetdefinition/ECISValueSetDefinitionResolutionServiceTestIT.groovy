@@ -1,4 +1,4 @@
-package edu.mayo.cts2.framework.plugin.service.ecis.profile.resolvedvalueset
+package edu.mayo.cts2.framework.plugin.service.ecis.profile.valuesetdefinition
 
 import javax.annotation.Resource;
 import javax.xml.transform.stream.StreamResult
@@ -16,7 +16,7 @@ import edu.mayo.cts2.framework.service.profile.resolvedvalueset.name.ResolvedVal
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations=["/test-ecis-cts2-context.xml"])
-class ECISResolvedValueSetResolutionServiceTestIT {
+class ECISValueSetDefinitionResolutionServiceTestIT {
 	
 	@Resource
 	Cts2Marshaller marshaller
