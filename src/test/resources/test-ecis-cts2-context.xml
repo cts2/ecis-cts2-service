@@ -31,5 +31,16 @@
         <property name="user" value="lexgrid"/>
         <property name="password" value="lexgrid"/>
     </bean>
+    
+    <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="staticMethod">
+			<value>org.springframework.util.Log4jConfigurer.initLogging</value>
+		</property>
+		<property name="arguments">
+			<list>
+				<value>classpath:testLog4j.properties</value>
+			</list>
+		</property>
+	</bean>
 
 </beans>

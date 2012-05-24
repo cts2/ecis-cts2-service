@@ -4,7 +4,11 @@
  "http://mybatis.org/dtd/mybatis-3-config.dtd">
  
 <configuration>
+	<typeAliases>
+		<typeAlias alias="LimitOffset" type="edu.mayo.cts2.framework.plugin.service.ecis.mybatis.pagination.LimitOffset"/>
+	</typeAliases>
     <mappers>
+    	<mapper resource="mybatis/commonMapper.xml"/>
         <mapper resource="mybatis/codeSystemMapper.xml"/>
         <mapper resource="mybatis/resolvedValueSetMapper.xml"/>
     </mappers>

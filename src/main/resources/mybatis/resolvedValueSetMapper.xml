@@ -13,34 +13,12 @@
 
 	<resultMap id="resolvedValueSetHeaderResultMap" type="edu.mayo.cts2.framework.model.valuesetdefinition.ResolvedValueSetHeader">
 		<association property="resolutionOf"  resultMap="resolutionOfResultMap" />
-         <collection property="resolvedUsingCodeSystemAsReference"  
-         ofType="edu.mayo.cts2.framework.model.core.CodeSystemVersionReference" >
-         
-         
-         <result property="version.uri" column="codeSystemUri"  />
-         
-         <association property="version" resultMap="currentVersionVersionNameAndMeaningReferenceResultMap"/>
-		 <association property="codeSystem" resultMap="currentVersionCodeSystemNameAndMeaningReferenceResultMap"/>
-         
-<!--          	<result property="version.uri" column="codeSystemUri"  /> -->
-         </collection> 
-<!--  		<collection property="resolvedUsingCodeSystem"  ofType="edu.mayo.cts2.framework.model.core.CodeSystemVersionReference" resultMap="codeSystemVersionReferenceResultMap"  /> --> 
-
-<!--  		<collection property="resolvedUsingCodeSystem"   resultMap="codeSystemVersionReferenceResultMap"  /> -->
- 		
-<!--        <collection property="_resolvedUsingCodeSystemList"   resultMap="codeSystemVersionReferenceResultMap" />
- -->	
+         <collection property="resolvedUsingCodeSystemAsReference"  resultMap="edu.mayo.cts2.framework.plugin.service.ecis.mybatis.dao.MybatisCodeSystemDao.codeSystemVersionReferenceResultMap"
+         ofType="edu.mayo.cts2.framework.model.core.CodeSystemVersionReference" />
      </resultMap>
-	
-<!-- 	<resultMap id="testResolvedValueSetHeaderResultMap" type="edu.mayo.cts2.framework.model.valuesetdefinition.ResolvedValueSetHeader"> -->
-<!-- 		<result property="_resolvedUsingCodeSystemList" column="codeSystemName" select="edu.mayo.cts2.framework.plugin.service.ecis.mybatis.dao.MybatisCodeSystemDao.getCodeSystemVersionReferenceByName" /> -->
 
-<!-- 		<association property="resolutionOf"  resultMap="resolutionOfResultMap" /> -->
-
-<!--      </resultMap> -->
-	 	
 	<resultMap id="resolutionOfResultMap" type="edu.mayo.cts2.framework.model.core.ValueSetDefinitionReference">
-		<!--  association property="valueSet" resultMap="valueSetReferenceResultMap" /-->
+		<association property="valueSet" resultMap="valueSetReferenceResultMap" />
 		<association  property="valueSetDefinition" resultMap="valueSetDefinitionReferenceResultMap"/>
 	</resultMap>
 	
@@ -62,7 +40,7 @@
 		<result property="designation" column="designation" />
 	</resultMap>
 
-	<select id="getResolvedValueSetSynopsis" parameterType="string"
+	<select id="getResolvedValueSetSynopsis"
 		resultMap="entitySynonpsisResultMap">
 		
 		SELECT   eae.SOURCEENTITYCODENAMESPACE AS entityNamespace, eae.SOURCEENTITYCODE AS entityName , e.DESCRIPTION AS designation
@@ -73,29 +51,36 @@
         ap.ASSOCIATIONPREDICATEGUID=  eae.ASSOCIATIONPREDICATEGUID AND
         eae.SOURCEENTITYCODE= e.ENTITYCODE AND
         eae.SOURCEENTITYCODENAMESPACE= e.ENTITYCODENAMESPACE AND
+        
         vsd.VALUESETDEFGUID= #{definition_id}
-			
+        
+        <include refid="common.limitOffset"/>	
 	</select>
 	
-	<select id="getResolvedValueSetHeader" parameterType="string"
-		resultMap="resolvedValueSetHeaderResultMap">
+	<select id="getResolvedValueSetHeader" 
+		resultMap="resolvedValueSetHeaderResultMap" parameterType="String">
 		SELECT   cs.CODINGSCHEMENAME AS codeSystemName, cs.CODINGSCHEMEURI AS codeSystemUri, 
 		cs.REPRESENTSVERSION AS codeSystemVersionName, cs.CODINGSCHEMEURI AS codeSystemVersionUri, 
 		vsd.VALUESETDEFURI AS valueSetDefinitionUri, vsd.VALUESETDEFNAME AS valueSetDefinitionName
 		FROM  VALUESETDEFINITION vsd, CODINGSCHEME cs
 		WHERE 
 		vsd.DEFAULTCODINGSCHEME= cs.CODINGSCHEMENAME AND
+
 		vsd.VALUESETDEFGUID= #{definition_id}	
+		
 	</select>
 
-	<select id="getCodeSystemVersionReferenceListByValueSetDefinition" parameterType="string"
-		resultMap="codeSystemVersionReferenceResultMap">
+	<select id="getCodeSystemVersionReferenceListByValueSetDefinition" 
+		resultMap="edu.mayo.cts2.framework.plugin.service.ecis.mybatis.dao.MybatisCodeSystemDao.codeSystemVersionReferenceResultMap">
 		SELECT   cs.CODINGSCHEMENAME AS codeSystemName, cs.CODINGSCHEMEURI AS codeSystemUri, 
 		cs.REPRESENTSVERSION AS codeSystemVersionName, cs.CODINGSCHEMEURI AS codeSystemVersionUri, 
 		vsd.VALUESETDEFURI AS valueSetDefinitionUri, vsd.VALUESETDEFNAME AS valueSetDefinitionName
 		FROM  VALUESETDEFINITION vsd, CODINGSCHEME cs
 		WHERE 
 		vsd.DEFAULTCODINGSCHEME= cs.CODINGSCHEMENAME AND
+		
 		vsd.VALUESETDEFGUID= #{definition_id}	
+
 	</select>
+
 </mapper>

@@ -23,10 +23,8 @@
  */
 package edu.mayo.cts2.framework.plugin.service.ecis.profile.resolvedvalueset;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Resource;
@@ -47,6 +45,8 @@ import edu.mayo.cts2.framework.model.entity.EntityDirectoryEntry;
 import edu.mayo.cts2.framework.model.valuesetdefinition.ResolvedValueSet;
 import edu.mayo.cts2.framework.model.valuesetdefinition.ResolvedValueSetHeader;
 import edu.mayo.cts2.framework.plugin.service.ecis.mybatis.dao.MybatisResolvedValueSetDao;
+import edu.mayo.cts2.framework.plugin.service.ecis.mybatis.pagination.LimitOffset;
+import edu.mayo.cts2.framework.plugin.service.ecis.mybatis.pagination.PaginationUtils;
 import edu.mayo.cts2.framework.plugin.service.ecis.profile.AbstractService;
 import edu.mayo.cts2.framework.service.meta.StandardMatchAlgorithmReference;
 import edu.mayo.cts2.framework.service.meta.StandardModelAttributeReference;
@@ -67,7 +67,7 @@ public class EcisResolvedValueSetResolutionService extends AbstractService
 	MybatisResolvedValueSetDao resolvedValueSetDao;
 
 	@Override
-	public ResolvedValueSetResult getResolution(
+	public ResolvedValueSetResult<EntitySynopsis> getResolution(
 			ResolvedValueSetReadId identifier,
 			Set<ResolvedFilter> filterComponent, 
 			Page page) {
@@ -75,26 +75,23 @@ public class EcisResolvedValueSetResolutionService extends AbstractService
 		String id = identifier.getLocalName();
 		String definition = identifier.getValueSet().getName();
 		
+		LimitOffset limitOffset = PaginationUtils.getLimitOffset(page);
+		
 		if(CollectionUtils.isEmpty(filterComponent)){			
-			List<EntitySynopsis> results = resolvedValueSetDao.getResolvedValueSetSynopsis(definition);
-
+			List<EntitySynopsis> results = 
+				resolvedValueSetDao.getResolvedValueSetSynopsis(definition, limitOffset);
 			
-			if(results == null|| results.isEmpty()){
+			if(CollectionUtils.isEmpty(results)){
 				return null;
+			} else {
+				return new ResolvedValueSetResult<EntitySynopsis>(
+						this.getResolvedValueSetHeader(id), 
+						results, 
+						PaginationUtils.setAtEnd(results, limitOffset));
 			}
-			
-			boolean moreResults = results.size() > page.getMaxToReturn();
-			
-			if(moreResults){
-				results.remove(results.size() - 1);
-			}
-					
-			return new ResolvedValueSetResult(
-					this.getResolvedValueSetHeader(id), 
-					results, 
-					!moreResults);
-		} 
-		return null;
+		} else {
+			throw new UnsupportedOperationException("Filters not yet implemented on ResolvedValueSets.");
+		}
 	}
 	
 	/* (non-Javadoc)
@@ -105,8 +102,7 @@ public class EcisResolvedValueSetResolutionService extends AbstractService
 			ResolvedValueSetReadId identifier,
 			ResolvedValueSetResolutionEntityQuery query,
 			SortCriteria sortCriteria, Page page) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	/* (non-Javadoc)
@@ -117,15 +113,11 @@ public class EcisResolvedValueSetResolutionService extends AbstractService
 			ResolvedValueSetReadId identifier,
 			ResolvedValueSetResolutionEntityQuery query,
 			SortCriteria sortCriteria, Page page) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	protected ResolvedValueSetHeader getResolvedValueSetHeader(String id){
-		Map<String,Object> parameters = new HashMap<String,Object>();
-		parameters.put("id", id);
-		
-		return null;
+		return this.resolvedValueSetDao.getResolvedValueSetHeader(id);
 	}
 
 	@Override

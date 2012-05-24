@@ -12,7 +12,9 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
 
+import edu.mayo.cts2.framework.model.command.Page
 import edu.mayo.cts2.framework.plugin.service.ecis.mybatis.dao.MybatisResolvedValueSetDao
+import edu.mayo.cts2.framework.plugin.service.ecis.mybatis.pagination.PaginationUtils
 
 @RunWith(SpringJUnit4ClassRunner)
 @ContextConfiguration(locations=["/test-ecis-cts2-context.xml"])
@@ -36,12 +38,15 @@ class MybatisResolvedValueSetTest {
 
 		def listResolvedVSH = dao.getResolvedValueSetHeader("9a06da7e-cab5-e724-e040-1c03053c10ef");
 		
-		assertTrue listResolvedVSH.size() > 0
+		assertNotNull listResolvedVSH
 	}
 	
 	@Test
 	void  testGetResolvedValueSetSynopsis(){
-		def listEntitySynopsys = dao.getResolvedValueSetSynopsis("9a06da7e-cab5-e724-e040-1c03053c10ef");
+		def page = new Page(); 
+		
+		def listEntitySynopsys = dao.getResolvedValueSetSynopsis(
+			"9a06da7e-cab5-e724-e040-1c03053c10ef", PaginationUtils.getLimitOffset(page));
 		
 		assertTrue listEntitySynopsys.size() > 0
 	}

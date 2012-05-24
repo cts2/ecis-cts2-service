@@ -11,9 +11,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import edu.mayo.cts2.framework.core.xml.Cts2Marshaller;
 import edu.mayo.cts2.framework.model.command.Page
-import edu.mayo.cts2.framework.model.command.ResolvedFilter
 import edu.mayo.cts2.framework.model.util.ModelUtils
-import edu.mayo.cts2.framework.service.meta.StandardMatchAlgorithmReference
 import edu.mayo.cts2.framework.service.profile.resolvedvalueset.name.ResolvedValueSetReadId
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -30,7 +28,7 @@ class ECISResolvedValueSetResolutionServiceTestIT {
 	void TestGetResolution(){
 
 		def dir = resolution.getResolution(
-			new ResolvedValueSetReadId("41011",
+			new ResolvedValueSetReadId("9a06da7e-cab5-e724-e040-1c03053c10ef",
 				ModelUtils.nameOrUriFromName("9a06da7e-cab5-e724-e040-1c03053c10ef"),null),
 			null,
 			new Page())
@@ -44,10 +42,21 @@ class ECISResolvedValueSetResolutionServiceTestIT {
 	void TestGetResolutionWrongValueSetName(){
 
 		def dir = resolution.getResolution(
-			new ResolvedValueSetReadId("41011",ModelUtils.nameOrUriFromName("BRO-WRONG"),null),null,new Page())
+			new ResolvedValueSetReadId("__WRONG__",ModelUtils.nameOrUriFromName("BRO-WRONG"),null),null,new Page())
 		
 		assertNull dir
 
+	}
+	
+	@Test
+	void TestGetResolutionHasResolutionOf(){
+
+		def dir = resolution.getResolution(
+			new ResolvedValueSetReadId("9a06da7e-cab5-e724-e040-1c03053c10ef",ModelUtils.nameOrUriFromName("9a06da7e-cab5-e724-e040-1c03053c10ef"),null),
+			null,
+			new Page())
+		
+		assertTrue dir.resolvedValueSetHeader.resolvedUsingCodeSystem.size() > 0
 	}
 	
 
@@ -63,9 +72,10 @@ class ECISResolvedValueSetResolutionServiceTestIT {
 		marshaller.marshal(dir, new StreamResult(new StringWriter()))
 	}
 	
-	//@Test
+	@Test
 	void TestGetResolvedValueSetHeader(){
-		def header = resolution.getResolvedValueSetHeader("41011")
+		def header = resolution.getResolvedValueSetHeader(
+				"9a06da7e-cab5-e724-e040-1c03053c10ef")
 		
 		assertNotNull header
 	}
