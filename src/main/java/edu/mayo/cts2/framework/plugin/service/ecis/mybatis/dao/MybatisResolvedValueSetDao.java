@@ -15,7 +15,7 @@ public interface MybatisResolvedValueSetDao {
 			@Param("valueSetName") String valueSetName, 
 			@Param("limitOffset") LimitOffset limitOffset);
     
-	public ResolvedValueSetHeader getResolvedValueSetHeader(String definition_id);
+	public ResolvedValueSetHeader getResolvedValueSetHeader(@Param("valueSetName") String valueSetName);
 	
 	public List<CodeSystemVersionReference> getCodeSystemVersionReferenceListByValueSetDefinition(String definition_id);
 

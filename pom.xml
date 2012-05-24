@@ -97,6 +97,8 @@
 							!javax.ejb.*,
 							!javax.mail,
 							!javax.mail.*,
+							!org.springframework.batch,
+							!org.springframework.batch.*,
 							edu.mayo.cts2.*,
 							edu.mayo.cts2.framework.core.xml,
 							edu.mayo.cts2.framework.core.plugin,

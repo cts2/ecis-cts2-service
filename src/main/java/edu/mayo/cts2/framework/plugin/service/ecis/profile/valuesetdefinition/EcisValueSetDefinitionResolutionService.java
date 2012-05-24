@@ -62,19 +62,9 @@ import edu.mayo.cts2.framework.service.profile.valuesetdefinition.name.ValueSetD
 @Component
 public class EcisValueSetDefinitionResolutionService extends AbstractService 
 	implements ValueSetDefinitionResolutionService {
+
 	@Resource
-	
 	private MybatisResolvedValueSetDao resolvedValueSetDao;
-
-	@Override
-	public Set<? extends PropertyReference> getSupportedSortReferences() {
-		return null;
-	}
-
-	@Override
-	public Set<PredicateReference> getKnownProperties() {
-		return null;
-	}
 
 	@Override
 	public Set<? extends MatchAlgorithmReference> getSupportedMatchAlgorithms() {
@@ -109,7 +99,9 @@ public class EcisValueSetDefinitionResolutionService extends AbstractService
 		
 		LimitOffset limitOffset = PaginationUtils.getLimitOffset(page);
 		
-		if(query != null){			
+		if(query != null && CollectionUtils.isNotEmpty(query.getFilterComponent())) {	
+			throw new UnsupportedOperationException("Filters not yet implemented on ResolvedValueSets.");
+		} else {
 			List<EntitySynopsis> results = 
 				resolvedValueSetDao.getResolvedValueSetSynopsis(valueSetName, limitOffset);
 			
@@ -121,8 +113,6 @@ public class EcisValueSetDefinitionResolutionService extends AbstractService
 						results, 
 						PaginationUtils.setAtEnd(results, limitOffset));
 			}
-		} else {
-			throw new UnsupportedOperationException("Filters not yet implemented on ResolvedValueSets.");
 		}
 	}
 
@@ -144,8 +134,18 @@ public class EcisValueSetDefinitionResolutionService extends AbstractService
 		throw new UnsupportedOperationException();
 	}
 	
-	protected ResolvedValueSetHeader getResolvedValueSetHeader(String id){
-		return this.resolvedValueSetDao.getResolvedValueSetHeader(id);
+	protected ResolvedValueSetHeader getResolvedValueSetHeader(String valueSetName){
+		return this.resolvedValueSetDao.getResolvedValueSetHeader(valueSetName);
 	}
 
+
+	@Override
+	public Set<? extends PropertyReference> getSupportedSortReferences() {
+		return null;
+	}
+
+	@Override
+	public Set<PredicateReference> getKnownProperties() {
+		return null;
+	}
 }

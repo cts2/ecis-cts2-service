@@ -36,7 +36,7 @@ class MybatisResolvedValueSetTest {
 	void  testGetResolvedValueSetHeader(){
 		logger.info("testGetResolvedValueSetHeader");
 
-		def listResolvedVSH = dao.getResolvedValueSetHeader("9a06da7e-cab5-e724-e040-1c03053c10ef");
+		def listResolvedVSH = dao.getResolvedValueSetHeader("Dietary_Formula_Strength_Value_Set");
 		
 		assertNotNull listResolvedVSH
 	}
@@ -46,7 +46,7 @@ class MybatisResolvedValueSetTest {
 		def page = new Page(); 
 		
 		def listEntitySynopsys = dao.getResolvedValueSetSynopsis(
-			"9a06da7e-cab5-e724-e040-1c03053c10ef", PaginationUtils.getLimitOffset(page));
+			"Dietary_Formula_Strength_Value_Set", PaginationUtils.getLimitOffset(page));
 		
 		assertTrue listEntitySynopsys.size() > 0
 	}
@@ -54,7 +54,7 @@ class MybatisResolvedValueSetTest {
 	
 	@Test
 	void  testGetCodeSystemVersionReferenceByValueSetDefinition(){
-		def listCodeSystemVersionRefs = dao.getCodeSystemVersionReferenceListByValueSetDefinition("9a06da7e-cab5-e724-e040-1c03053c10ef");
+		def listCodeSystemVersionRefs = dao.getCodeSystemVersionReferenceListByValueSetDefinition("Dietary_Formula_Strength_Value_Set");
 		
 		assertTrue listCodeSystemVersionRefs.size() > 0
 	}

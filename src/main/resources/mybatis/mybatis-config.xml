@@ -6,7 +6,9 @@
 <configuration>
 	<typeAliases>
 		<typeAlias alias="LimitOffset" type="edu.mayo.cts2.framework.plugin.service.ecis.mybatis.pagination.LimitOffset"/>
+		<typeAlias alias="valueSetNameHandler" type="edu.mayo.cts2.framework.plugin.service.ecis.mybatis.typehandlers.ValueSetNameTypeHandler"/>
 	</typeAliases>
+	
     <mappers>
     	<mapper resource="mybatis/commonMapper.xml"/>
         <mapper resource="mybatis/codeSystemMapper.xml"/>

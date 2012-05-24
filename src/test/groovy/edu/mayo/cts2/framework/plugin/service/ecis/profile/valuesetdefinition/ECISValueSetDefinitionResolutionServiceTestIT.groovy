@@ -13,6 +13,7 @@ import edu.mayo.cts2.framework.core.xml.Cts2Marshaller;
 import edu.mayo.cts2.framework.model.command.Page
 import edu.mayo.cts2.framework.model.util.ModelUtils
 import edu.mayo.cts2.framework.service.profile.resolvedvalueset.name.ResolvedValueSetReadId
+import edu.mayo.cts2.framework.service.profile.valuesetdefinition.name.ValueSetDefinitionReadId
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations=["/test-ecis-cts2-context.xml"])
@@ -22,14 +23,18 @@ class ECISValueSetDefinitionResolutionServiceTestIT {
 	Cts2Marshaller marshaller
 	
 	@Resource
-	EcisResolvedValueSetResolutionService resolution
+	EcisValueSetDefinitionResolutionService resolution
 	
 	@Test
-	void TestGetResolution(){
+	void TestResolveDefinition(){
 
-		def dir = resolution.getResolution(
-			new ResolvedValueSetReadId("9a06da7e-cab5-e724-e040-1c03053c10ef",
-				ModelUtils.nameOrUriFromName("9a06da7e-cab5-e724-e040-1c03053c10ef"),null),
+		def dir = resolution.resolveDefinition(
+			new ValueSetDefinitionReadId("1",
+				ModelUtils.nameOrUriFromName("Dietary Formula Strength Value Set")),
+			null,
+			null,
+			null,
+			null,
 			null,
 			new Page())
 		
@@ -41,20 +46,35 @@ class ECISValueSetDefinitionResolutionServiceTestIT {
 	@Test
 	void TestGetResolutionWrongValueSetName(){
 
-		def dir = resolution.getResolution(
-			new ResolvedValueSetReadId("__WRONG__",ModelUtils.nameOrUriFromName("BRO-WRONG"),null),null,new Page())
+			def dir = resolution.resolveDefinition(
+			new ValueSetDefinitionReadId("1",
+				ModelUtils.nameOrUriFromName("__WRONG__")),
+			null,
+			null,
+			null,
+			null,
+			null,
+			new Page())
 		
 		assertNull dir
-
 	}
 	
 	@Test
 	void TestGetResolutionHasResolutionOf(){
 
-		def dir = resolution.getResolution(
-			new ResolvedValueSetReadId("9a06da7e-cab5-e724-e040-1c03053c10ef",ModelUtils.nameOrUriFromName("9a06da7e-cab5-e724-e040-1c03053c10ef"),null),
+		def dir = resolution.resolveDefinition(
+			new ValueSetDefinitionReadId("1",
+				ModelUtils.nameOrUriFromName("Dietary Formula Strength Value Set")),
+			null,
+			null,
+			null,
+			null,
 			null,
 			new Page())
+		
+		assertNotNull dir
+		assertTrue dir.getEntries().size() > 0
+
 		
 		assertTrue dir.resolvedValueSetHeader.resolvedUsingCodeSystem.size() > 0
 	}
@@ -64,18 +84,28 @@ class ECISValueSetDefinitionResolutionServiceTestIT {
 	@Test
 	void TestGetResolutionValidXML(){
 
-		def dir = resolution.getResolution(
-			new ResolvedValueSetReadId("41011",ModelUtils.nameOrUriFromName("9a06da7e-cab5-e724-e040-1c03053c10ef"),null),
+		def dir = resolution.resolveDefinition(
+			new ValueSetDefinitionReadId("1",
+				ModelUtils.nameOrUriFromName("Dietary_Formula_Strength_Value_Set")),
+			null,
+			null,
+			null,
+			null,
 			null,
 			new Page())
 		
-		marshaller.marshal(dir, new StreamResult(new StringWriter()))
+		assertNotNull dir
+		assertTrue dir.getEntries().size() > 0
+
+		dir.entries.each {
+			marshaller.marshal(it, new StreamResult(new StringWriter()))
+		}
 	}
 	
 	@Test
 	void TestGetResolvedValueSetHeader(){
 		def header = resolution.getResolvedValueSetHeader(
-				"9a06da7e-cab5-e724-e040-1c03053c10ef")
+				"Dietary Formula Strength Value Set")
 		
 		assertNotNull header
 	}

@@ -39,20 +39,36 @@
 		<result property="name" column="entityName"/>
 		<result property="designation" column="designation" />
 	</resultMap>
+	
+	<sql id="equalsVsDefName">
+		vsd.VALUESETDEFNAME = #{valueSetName, typeHandler=valueSetNameHandler}	
+	</sql>
 
 	<select id="getResolvedValueSetSynopsis"
 		resultMap="entitySynonpsisResultMap">
 		
-		SELECT   eae.SOURCEENTITYCODENAMESPACE AS entityNamespace, eae.SOURCEENTITYCODE AS entityName , e.DESCRIPTION AS designation
-        FROM  ENTITYASSNSTOENTITY eae, ASSOCIATIONPREDICATE ap, VSDENTRY vsd, ENTITY e
-        WHERE 
-        vsd.ENTITYCODE= eae.TARGETENTITYCODE AND
-        vsd.REFERENCEASSOCIATION= ap.ASSOCIATIONNAME AND
-        ap.ASSOCIATIONPREDICATEGUID=  eae.ASSOCIATIONPREDICATEGUID AND
-        eae.SOURCEENTITYCODE= e.ENTITYCODE AND
-        eae.SOURCEENTITYCODENAMESPACE= e.ENTITYCODENAMESPACE AND
+		SELECT   
+			eae.SOURCEENTITYCODENAMESPACE AS entityNamespace, 
+			eae.SOURCEENTITYCODE AS entityName, 
+			e.DESCRIPTION AS designation,
+			e.ENTITYGUID AS uri
         
-        vsd.VALUESETDEFGUID= #{definition_id}
+        FROM  
+        	ENTITYASSNSTOENTITY eae, 
+        	ASSOCIATIONPREDICATE ap, 
+        	VSDENTRY vse, 
+        	VALUESETDEFINITION vsd, 
+        	ENTITY e
+        
+        WHERE 
+        	vsd.VALUESETDEFGUID = vse.VALUESETDEFGUID AND
+	        vse.ENTITYCODE = eae.TARGETENTITYCODE AND
+	        vse.REFERENCEASSOCIATION = ap.ASSOCIATIONNAME AND
+	        ap.ASSOCIATIONPREDICATEGUID =  eae.ASSOCIATIONPREDICATEGUID AND
+	        eae.SOURCEENTITYCODE = e.ENTITYCODE AND
+	        eae.SOURCEENTITYCODENAMESPACE = e.ENTITYCODENAMESPACE AND
+	        
+	        <include refid="equalsVsDefName"/>	
         
         <include refid="common.limitOffset"/>	
 	</select>
@@ -66,7 +82,7 @@
 		WHERE 
 		vsd.DEFAULTCODINGSCHEME= cs.CODINGSCHEMENAME AND
 
-		vsd.VALUESETDEFGUID= #{definition_id}	
+		<include refid="equalsVsDefName"/>	
 		
 	</select>
 
@@ -79,7 +95,7 @@
 		WHERE 
 		vsd.DEFAULTCODINGSCHEME= cs.CODINGSCHEMENAME AND
 		
-		vsd.VALUESETDEFGUID= #{definition_id}	
+		<include refid="equalsVsDefName"/>		
 
 	</select>
 
