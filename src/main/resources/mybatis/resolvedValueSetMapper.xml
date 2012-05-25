@@ -24,16 +24,16 @@
 	
 	<resultMap id="valueSetDefinitionReferenceResultMap" type="edu.mayo.cts2.framework.model.core.NameAndMeaningReference">
 		<result property="content" column="valueSetDefinitionName" />
-		<result property="uri" column="valueSetDefinitionUri"/>
+		<result property="uri" column="valueSetDefinitionUri" />
 	</resultMap>
 	
 	<resultMap id="valueSetReferenceResultMap" type="edu.mayo.cts2.framework.model.core.ValueSetReference">
 		<result property="content" column="valueSetName" />
-		<result property="uri" column="valueSetUri"/>
+		<result property="uri" column="valueSetUri" typeHandler="uuidUriTypeHandler"/>
 	</resultMap>
 	
 	<resultMap id="entitySynonpsisResultMap" type="edu.mayo.cts2.framework.model.core.EntitySynopsis">
-		<result property="uri" column="uri"/>
+		<result property="uri" column="uri" typeHandler="uuidUriTypeHandler"/>
 		<result property="href" column="href"/>
 		<result property="namespace" column="entityNamespace"  />
 		<result property="name" column="entityName"/>
@@ -48,29 +48,143 @@
 		resultMap="entitySynonpsisResultMap">
 		
 		SELECT   
-			eae.SOURCEENTITYCODENAMESPACE AS entityNamespace, 
-			eae.SOURCEENTITYCODE AS entityName, 
+			e.ENTITYCODENAMESPACE AS entityNamespace, 
+			e.ENTITYCODE AS entityName, 
 			e.DESCRIPTION AS designation,
 			e.ENTITYGUID AS uri
         
         FROM  
-        	ENTITYASSNSTOENTITY eae, 
-        	ASSOCIATIONPREDICATE ap, 
-        	VSDENTRY vse, 
-        	VALUESETDEFINITION vsd, 
         	ENTITY e
         
         WHERE 
-        	vsd.VALUESETDEFGUID = vse.VALUESETDEFGUID AND
-	        vse.ENTITYCODE = eae.TARGETENTITYCODE AND
-	        vse.REFERENCEASSOCIATION = ap.ASSOCIATIONNAME AND
-	        ap.ASSOCIATIONPREDICATEGUID =  eae.ASSOCIATIONPREDICATEGUID AND
-	        eae.SOURCEENTITYCODE = e.ENTITYCODE AND
-	        eae.SOURCEENTITYCODENAMESPACE = e.ENTITYCODENAMESPACE AND
-	        
-	        <include refid="equalsVsDefName"/>	
-        
+        	e.ENTITYCODE IN
+    	    <foreach item="item" index="index" collection="entities" open="("
+				separator="," close=")">
+		      #{item}
+		    </foreach> 
+	
         <include refid="common.limitOffset"/>	
+	</select>
+	
+	<select id="resolveOneLevelRelations" resultType="string">	
+		SELECT 
+			eae.SOURCEENTITYCODE AS level, 
+		
+		FROM  
+		
+			ENTITYASSNSTOENTITY as eae
+
+		WHERE
+	    	eae.TARGETENTITYCODE = #{entity}
+	
+		    AND
+		    
+		    eae.ASSOCIATIONPREDICATEGUID = #{predicate}
+	</select>
+	
+	<select id="resolveTransitiveRelationsFiveLevels" resultType="transitiveResult">
+		
+		SELECT 
+			eae.SOURCEENTITYCODE AS level1, 
+			eae2.SOURCEENTITYCODE AS level2, 
+			eae3.SOURCEENTITYCODE AS level3, 
+			eae4.SOURCEENTITYCODE AS level4, 
+			eae5.SOURCEENTITYCODE AS level5
+		
+		FROM  
+		
+			ENTITYASSNSTOENTITY as eae
+			
+			LEFT JOIN
+				ENTITYASSNSTOENTITY as eae2
+			ON (
+				eae.SOURCEENTITYCODE = eae2.TARGETENTITYCODE
+				AND
+				eae2.ASSOCIATIONPREDICATEGUID = #{predicate}
+			)
+			
+			LEFT JOIN
+				ENTITYASSNSTOENTITY as eae3
+			ON (
+				eae2.SOURCEENTITYCODE = eae3.TARGETENTITYCODE
+				AND
+				eae3.ASSOCIATIONPREDICATEGUID = #{predicate}
+			)
+			
+			LEFT JOIN
+				ENTITYASSNSTOENTITY as eae4
+			ON (
+				eae3.SOURCEENTITYCODE = eae4.TARGETENTITYCODE
+				AND
+				eae4.ASSOCIATIONPREDICATEGUID = #{predicate}
+			)
+			
+			LEFT JOIN
+				ENTITYASSNSTOENTITY as eae5
+			ON (
+				eae4.SOURCEENTITYCODE = eae5.TARGETENTITYCODE
+				AND
+				eae5.ASSOCIATIONPREDICATEGUID = #{predicate}
+			)
+
+		WHERE
+<!-- 	    	eae.TARGETENTITYCODE = #{entity} -->
+
+	    	eae.TARGETENTITYCODE IN
+    	    <foreach item="item" index="index" collection="entities" open="("
+				separator="," close=")">
+		      #{item}
+		    </foreach> 
+	
+		    AND
+		    
+		    eae.ASSOCIATIONPREDICATEGUID = #{predicate}
+
+	</select>
+	
+	<select id="getEntries" resultType="valueSetDefinitionEntryInfo">
+		
+		SELECT 
+			vse.ENTITYCODE AS entityCode,
+			vse.TRANSITIVECLOSURE AS isTransitive,
+			ap.ASSOCIATIONPREDICATEGUID AS predicateGuid
+		FROM  
+			VALUESETDEFINITION as vsd
+		
+		LEFT JOIN
+			VSDENTRY AS vse
+		ON vsd.VALUESETDEFGUID = vse.VALUESETDEFGUID
+		
+		INNER JOIN
+			VSSUPPORTEDATTRIB AS vssa
+		ON (
+			vsd.VALUESETDEFGUID = vssa.REFERENCEGUID
+			AND
+			vssa.ID = vsd.DEFAULTCODINGSCHEME
+		)
+		
+		INNER JOIN 
+			CODINGSCHEME AS cs
+		ON vssa.URI = cs.CODINGSCHEMEURI
+		
+		INNER JOIN 
+			RELATION AS rel
+		ON (
+			cs.CODINGSCHEMEGUID = rel.CODINGSCHEMEGUID
+			AND
+			rel.containerName = 'relations'
+		)
+		
+		INNER JOIN 
+			ASSOCIATIONPREDICATE AS ap
+		ON (
+			ap.RELATIONGUID = rel.RELATIONGUID
+			AND
+			ap.ASSOCIATIONNAME = vse.REFERENCEASSOCIATION
+		)
+		WHERE
+	    	<include refid="equalsVsDefName"/>	
+        
 	</select>
 	
 	<select id="getResolvedValueSetHeader" 

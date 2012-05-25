@@ -1,4 +1,4 @@
-package edu.mayo.cts2.framework.plugin.service.ecis.mybatis.dao.test;
+package edu.mayo.cts2.framework.plugin.service.ecis.mybatis.dao;
 
 import javax.annotation.Resource
 import javax.sql.DataSource

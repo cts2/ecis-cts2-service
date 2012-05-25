@@ -65,6 +65,9 @@ public class EcisValueSetDefinitionResolutionService extends AbstractService
 
 	@Resource
 	private MybatisResolvedValueSetDao resolvedValueSetDao;
+	
+	@Resource
+	private TransitiveBuilder transitiveBuilder;
 
 	@Override
 	public Set<? extends MatchAlgorithmReference> getSupportedMatchAlgorithms() {
@@ -102,8 +105,14 @@ public class EcisValueSetDefinitionResolutionService extends AbstractService
 		if(query != null && CollectionUtils.isNotEmpty(query.getFilterComponent())) {	
 			throw new UnsupportedOperationException("Filters not yet implemented on ResolvedValueSets.");
 		} else {
+			Set<String> codes = this.transitiveBuilder.getTransitiveCodes(valueSetName);
+			
+			if(CollectionUtils.isEmpty(codes)){
+				return null;
+			}
+			
 			List<EntitySynopsis> results = 
-				resolvedValueSetDao.getResolvedValueSetSynopsis(valueSetName, limitOffset);
+				resolvedValueSetDao.getResolvedValueSetSynopsis(codes, limitOffset);
 			
 			if(CollectionUtils.isEmpty(results)){
 				return null;

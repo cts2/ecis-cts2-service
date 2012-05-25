@@ -1,4 +1,4 @@
-package edu.mayo.cts2.framework.plugin.service.ecis.mybatis.dao.test;
+package edu.mayo.cts2.framework.plugin.service.ecis.mybatis.dao;
 
 import javax.annotation.Resource
 import javax.sql.DataSource
@@ -46,7 +46,7 @@ class MybatisResolvedValueSetTest {
 		def page = new Page(); 
 		
 		def listEntitySynopsys = dao.getResolvedValueSetSynopsis(
-			"Dietary_Formula_Strength_Value_Set", PaginationUtils.getLimitOffset(page));
+			["4887c412-b7c0-4130-09fc-0ce34632216e"] as Set, PaginationUtils.getLimitOffset(page));
 		
 		assertTrue listEntitySynopsys.size() > 0
 	}
@@ -59,5 +59,24 @@ class MybatisResolvedValueSetTest {
 		assertTrue listCodeSystemVersionRefs.size() > 0
 	}
 	
+	@Test
+	void  testResolveTransitiveRelationsFiveLevels(){
+		def transitiveResult = dao.resolveTransitiveRelationsFiveLevels(
+			["1d529776-be3a-4cba-a277-863ca9bab696"] as Set, 
+			"9a06da72-91fb-e724-e040-1c03053c10ef");
+		
+		assertNotNull transitiveResult
+		assertTrue transitiveResult.size() > 0
+	}
+	
+	
+	@Test
+	void  testGetEntries(){
+		def result = dao.getEntries("Dietary_Formula_Strength_Value_Set");
+		
+		assertNotNull result
+		assertTrue result.size() > 0
+	}
+
 	
 }

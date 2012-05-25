@@ -4,6 +4,8 @@ import javax.annotation.Resource;
 import javax.xml.transform.stream.StreamResult
 
 import static org.junit.Assert.*
+
+import org.junit.Ignore
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration
@@ -12,7 +14,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import edu.mayo.cts2.framework.core.xml.Cts2Marshaller;
 import edu.mayo.cts2.framework.model.command.Page
 import edu.mayo.cts2.framework.model.util.ModelUtils
-import edu.mayo.cts2.framework.service.profile.resolvedvalueset.name.ResolvedValueSetReadId
 import edu.mayo.cts2.framework.service.profile.valuesetdefinition.name.ValueSetDefinitionReadId
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -40,6 +41,53 @@ class ECISValueSetDefinitionResolutionServiceTestIT {
 		
 		assertNotNull dir
 		assertTrue dir.getEntries().size() > 0
+		
+		println dir.getEntries().size()
+
+	}
+	
+	/*
+	 * VALUESETDEFNAME in the DB is not unique!
+	 * This test fails
+	 */
+	@Test
+	@Ignore
+	void TestResolveDefinitionListSource(){
+
+		def dir = resolution.resolveDefinition(
+			new ValueSetDefinitionReadId("1",
+				ModelUtils.nameOrUriFromName("List source value set")),
+			null,
+			null,
+			null,
+			null,
+			null,
+			new Page())
+		
+		assertNotNull dir
+		assertTrue dir.getEntries().size() > 0
+		
+		println dir.getEntries().size()
+
+	}
+	
+	@Test
+	void TestResolveDefinitionLarge(){
+
+		def dir = resolution.resolveDefinition(
+			new ValueSetDefinitionReadId("1",
+				ModelUtils.nameOrUriFromName("Food Value Set")),
+			null,
+			null,
+			null,
+			null,
+			null,
+			new Page(maxtoreturn:10000000))
+		
+		assertNotNull dir
+		assertTrue dir.getEntries().size() > 0
+		
+		println dir.getEntries().size()
 
 	}
 	
@@ -79,8 +127,23 @@ class ECISValueSetDefinitionResolutionServiceTestIT {
 		assertTrue dir.resolvedValueSetHeader.resolvedUsingCodeSystem.size() > 0
 	}
 	
+	@Test
+	void TestGetResolutionNoEntries(){
 
-	
+		def dir = resolution.resolveDefinition(
+			new ValueSetDefinitionReadId("1",
+				ModelUtils.nameOrUriFromName("__INVALID__")),
+			null,
+			null,
+			null,
+			null,
+			null,
+			new Page())
+		
+		assertNull dir
+		
+	}
+
 	@Test
 	void TestGetResolutionValidXML(){
 
