@@ -6,9 +6,9 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
+import edu.mayo.cts2.framework.core.url.UrlConstructor;
 import edu.mayo.cts2.framework.model.command.Page;
 import edu.mayo.cts2.framework.model.core.MatchAlgorithmReference;
 import edu.mayo.cts2.framework.model.core.PredicateReference;
@@ -21,22 +21,22 @@ import edu.mayo.cts2.framework.plugin.service.ecis.mybatis.dao.MybatisMapDao;
 import edu.mayo.cts2.framework.plugin.service.ecis.mybatis.id.IdService;
 import edu.mayo.cts2.framework.plugin.service.ecis.mybatis.pagination.LimitOffset;
 import edu.mayo.cts2.framework.plugin.service.ecis.mybatis.pagination.PaginationUtils;
-import edu.mayo.cts2.framework.plugin.service.ecis.profile.AbstractService;
 import edu.mayo.cts2.framework.service.meta.StandardMatchAlgorithmReference;
 import edu.mayo.cts2.framework.service.profile.mapentry.MapEntryQuery;
 import edu.mayo.cts2.framework.service.profile.mapentry.MapEntryQueryService;
 
 @Component
-public class EcisMapEntryQueryService extends AbstractService
+public class EcisMapEntryQueryService extends AbstractMapEntryService
 	implements MapEntryQueryService {
-	
-	private final static String VERSION_SUFFIX = "-v1";
 	
 	@Resource
 	private MybatisMapDao mybatisMapDao;
 	
 	@Resource
 	private IdService idService;
+	
+	@Resource
+	private UrlConstructor urlConstructor;
 
 	@Override
 	public DirectoryResult<MapEntryDirectoryEntry> getResourceSummaries(
@@ -57,13 +57,27 @@ public class EcisMapEntryQueryService extends AbstractService
 		LimitOffset limitOffset = PaginationUtils.getLimitOffset(page);
 		List<MapEntryDirectoryEntry> entries = this.mybatisMapDao.getMapEntries(guid, limitOffset);
 		
+		this.addInHref(entries);
+		
 		boolean atEnd = PaginationUtils.setAtEnd(entries, limitOffset);
 		
 		return new DirectoryResult<MapEntryDirectoryEntry>(entries, atEnd);	
 	}
-	
-	private String stripOffVersion(String mapVersionName) {
-		return StringUtils.removeEnd(mapVersionName, VERSION_SUFFIX);
+
+	private void addInHref(List<MapEntryDirectoryEntry> entries) {
+		if(entries == null){
+			return;
+		}
+		
+		for(MapEntryDirectoryEntry entry : entries) {
+			String href = this.urlConstructor.
+				createMapEntryUrl(
+					entry.getAssertedBy().getMap().getContent(),
+					entry.getAssertedBy().getMapVersion().getContent(), 
+					entry.getMapFrom().getName());
+			
+			entry.setHref(href);
+		}
 	}
 
 	@Override

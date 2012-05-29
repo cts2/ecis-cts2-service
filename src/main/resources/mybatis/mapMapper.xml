@@ -55,11 +55,11 @@
 		SELECT   
 			sourceEntity.ENTITYCODE AS sourceEntityCode,
 			sourceEntity.ENTITYCODENAMESPACE AS sourceNamespace,
-			sourceEntity.ENTITYCODENAMESPACE AS sourceUri,
+			sourceEntity.ENTITYGUID AS sourceUri,
 			
 			targetEntity.ENTITYCODE AS targetEntityCode,
 			targetEntity.ENTITYCODENAMESPACE AS targetNamespace,
-			targetEntity.ENTITYCODENAMESPACE AS targetUri,
+			targetEntity.ENTITYGUID AS targetUri,
 			
 			'ALL_MATCHES' AS processingRule,
 			'1' AS entryOrder,

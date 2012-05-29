@@ -40,4 +40,24 @@ class ECISMapEntryQueryServiceTestIT {
 		assertTrue summaries.entries.size() > 0
 	}
 	
+	@Test
+	void TestGetEntriesWithMapVersionNameHaveHrefs() {
+		def summaries = service.getResourceSummaries(
+			[
+				getRestrictions: {
+					new MapEntryQueryServiceRestrictions(mapVersion: ModelUtils.nameOrUriFromName("Admission_Type_to_CKS_Terminology-v1"))
+				}
+			] as MapEntryQuery,
+			null,
+			new Page());
+		
+		assertNotNull summaries
+		assertTrue summaries.entries.size() > 0
+		
+		summaries.entries.each {
+			assertNotNull it.href
+		}
+		
+	}
+	
 }
