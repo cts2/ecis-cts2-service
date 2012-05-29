@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.mayo.cts2.framework.plugin.service.ecis.mybatis.dao.MybatisMapDao">
+
+	<resultMap id="mapEntryResultMap"
+		type="edu.mayo.cts2.framework.model.mapversion.MapEntry">
+		<result property="mapFrom.name" column="sourceEntityCode" />
+	</resultMap>
+
+	<sql id="equalsMapName">
+		cs.CODINGSCHEMEGUID = #{mapGuid}	
+	</sql>
+
+	<select id="getMapEntries"
+		resultMap="mapEntryResultMap">
+		
+		SELECT   
+			eae.SOURCEENTITYCODE AS sourceEntityCode,
+			eae.TARGETENTITYCODE
+        
+        FROM  
+        	CODINGSCHEME AS cs
+       
+        INNER JOIN
+        	RELATION AS rel
+        ON cs.CODINGSCHEMEGUID = rel.CODINGSCHEMEGUID
+        
+        INNER JOIN
+        	ASSOCIATIONPREDICATE ap
+        ON rel.RELATIONGUID = ap.RELATIONGUID
+        
+        LEFT JOIN
+        	ENTITYASSNSTOENTITY eae
+        ON ap.ASSOCIATIONPREDICATEGUID = eae.ASSOCIATIONPREDICATEGUID
+        
+        WHERE
+        	<include refid="equalsMapName"/>	
+        
+        <include refid="common.limitOffset"/>	
+	</select>
+	
+</mapper>

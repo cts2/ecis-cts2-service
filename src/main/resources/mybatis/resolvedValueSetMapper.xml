@@ -41,7 +41,7 @@
 	</resultMap>
 	
 	<sql id="equalsVsDefName">
-		vsd.VALUESETDEFNAME = #{valueSetName, typeHandler=valueSetNameHandler}	
+		vsd.VALUESETDEFNAME = #{valueSetName, typeHandler=spaceToUnderscoreTypeHandler}	
 	</sql>
 
 	<select id="getResolvedValueSetSynopsis"

@@ -10,11 +10,11 @@ import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.StringTypeHandler;
 
-public class ValueSetNameTypeHandler extends BaseTypeHandler<String> {
+public class SpaceToUnderscoreTypeHandler extends BaseTypeHandler<String> {
 
 	private StringTypeHandler delegate;
 	
-	public ValueSetNameTypeHandler(){
+	public SpaceToUnderscoreTypeHandler(){
 		super();
 		delegate = new StringTypeHandler();
 	}

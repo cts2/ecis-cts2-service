@@ -6,7 +6,7 @@
 <configuration>
 	<typeAliases>
 		<typeAlias alias="LimitOffset" type="edu.mayo.cts2.framework.plugin.service.ecis.mybatis.pagination.LimitOffset"/>
-		<typeAlias alias="valueSetNameHandler" type="edu.mayo.cts2.framework.plugin.service.ecis.mybatis.typehandlers.ValueSetNameTypeHandler"/>
+		<typeAlias alias="spaceToUnderscoreTypeHandler" type="edu.mayo.cts2.framework.plugin.service.ecis.mybatis.typehandlers.SpaceToUnderscoreTypeHandler"/>
 		<typeAlias alias="uuidUriTypeHandler" type="edu.mayo.cts2.framework.plugin.service.ecis.mybatis.typehandlers.UuidUriTypeHandler"/>
 		<typeAlias alias="transitiveResult" type="edu.mayo.cts2.framework.plugin.service.ecis.mybatis.dao.TransitiveResult"/>
 		<typeAlias alias="valueSetDefinitionEntryInfo" type="edu.mayo.cts2.framework.plugin.service.ecis.mybatis.dao.ValueSetDefinitionEntryInfo"/>
@@ -16,5 +16,7 @@
     	<mapper resource="mybatis/commonMapper.xml"/>
         <mapper resource="mybatis/codeSystemMapper.xml"/>
         <mapper resource="mybatis/resolvedValueSetMapper.xml"/>
+        <mapper resource="mybatis/mapMapper.xml"/>
+        <mapper resource="mybatis/idServiceMapper.xml"/>
     </mappers>
 </configuration>
