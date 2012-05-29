@@ -17,6 +17,8 @@
          <property name="jdbcUrl" value="${jdbcUrl}"/> 
          <property name="user" value="${username}"/> 
          <property name="password" value="${password}"/> 
+         <property name="idleConnectionTestPeriod" value="${idleConnectionTestPeriod}"/>
+         <property name="preferredTestQuery" value="${preferredTestQuery}"/>
     </bean> 
 
 	<bean id="transactionManager"
