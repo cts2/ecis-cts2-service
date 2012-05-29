@@ -7,38 +7,148 @@
 	<resultMap id="mapEntryResultMap"
 		type="edu.mayo.cts2.framework.model.mapversion.MapEntry">
 		<result property="mapFrom.name" column="sourceEntityCode" />
+		<result property="mapFrom.namespace" column="sourceNamespace" />
+		<result property="mapFrom.uri" column="sourceUri" typeHandler="uuidUriTypeHandler"/>
+		<result property="processingRule" column="processingRule" />
+		<association property="assertedBy" resultMap="mapVersionReferenceResultMap" />
+		<collection property="mapSetAsReference" javaType="edu.mayo.cts2.framework.model.mapversion.MapSet">
+			<result property="processingRule" column="processingRule" />
+			<result property="entryOrder" column="entryOrder"/>
+			<collection property="mapTargetAsReference" javaType="edu.mayo.cts2.framework.model.mapversion.MapTarget">
+				<result property="mapTo.name" column="targetEntityCode" />
+				<result property="mapTo.namespace" column="targetNamespace" />
+				<result property="mapTo.uri" column="targetUri" typeHandler="uuidUriTypeHandler"/>
+				<result property="entryOrder" column="entryOrder"/>
+			</collection>
+		</collection>
+	</resultMap>
+	
+	<resultMap id="mapEntryDirectoryEntryResultMap"
+		type="edu.mayo.cts2.framework.model.mapversion.MapEntryDirectoryEntry">
+		<result property="mapFrom.name" column="sourceEntityCode" />
+		<result property="mapFrom.namespace" column="sourceNamespace" />
+		<result property="mapFrom.uri" column="sourceUri" typeHandler="uuidUriTypeHandler"/>
+		<association property="assertedBy" resultMap="mapVersionReferenceResultMap" />
+	</resultMap>
+	
+	<resultMap id="mapVersionReferenceResultMap"
+		type="edu.mayo.cts2.framework.model.core.MapVersionReference">
+		<association property="map" resultMap="mapReferenceResultMap" />
+		<association property="mapVersion" resultMap="nameAndMeaningReferenceResultMap" />
+	</resultMap>
+	
+	<resultMap id="mapReferenceResultMap"
+		type="edu.mayo.cts2.framework.model.core.MapReference">
+		<result property="content" column="map" typeHandler="spaceToUnderscoreTypeHandler" />
+		<result property="uri" column="mapUri" />
 	</resultMap>
 
-	<sql id="equalsMapName">
-		cs.CODINGSCHEMEGUID = #{mapGuid}	
-	</sql>
+	<resultMap id="nameAndMeaningReferenceResultMap"
+		type="edu.mayo.cts2.framework.model.core.NameAndMeaningReference">
+		<result property="content" column="mapVersion" typeHandler="spaceToUnderscoreTypeHandler" />
+		<result property="uri" column="mapVersionUri" />
+	</resultMap>
 
-	<select id="getMapEntries"
+	<select id="getMapEntryById"
 		resultMap="mapEntryResultMap">
 		
 		SELECT   
-			eae.SOURCEENTITYCODE AS sourceEntityCode,
-			eae.TARGETENTITYCODE
-        
+			sourceEntity.ENTITYCODE AS sourceEntityCode,
+			sourceEntity.ENTITYCODENAMESPACE AS sourceNamespace,
+			sourceEntity.ENTITYCODENAMESPACE AS sourceUri,
+			
+			targetEntity.ENTITYCODE AS targetEntityCode,
+			targetEntity.ENTITYCODENAMESPACE AS targetNamespace,
+			targetEntity.ENTITYCODENAMESPACE AS targetUri,
+			
+			'ALL_MATCHES' AS processingRule,
+			'1' AS entryOrder,
+			
+			<include refid="assertedBySql"/>
+			
         FROM  
-        	CODINGSCHEME AS cs
-       
+        	RELATION rel
+        	
         INNER JOIN
-        	RELATION AS rel
-        ON cs.CODINGSCHEMEGUID = rel.CODINGSCHEMEGUID
+        	CODINGSCHEME cs
+        ON rel.CODINGSCHEMEGUID = cs.CODINGSCHEMEGUID
         
         INNER JOIN
         	ASSOCIATIONPREDICATE ap
         ON rel.RELATIONGUID = ap.RELATIONGUID
         
-        LEFT JOIN
+        INNER JOIN
         	ENTITYASSNSTOENTITY eae
         ON ap.ASSOCIATIONPREDICATEGUID = eae.ASSOCIATIONPREDICATEGUID
         
-        WHERE
-        	<include refid="equalsMapName"/>	
+        INNER JOIN
+        	ENTITY sourceEntity
+        ON (
+        	sourceEntity.ENTITYCODE = eae.SOURCEENTITYCODE
+        	AND
+        	sourceEntity.ENTITYCODENAMESPACE = eae.SOURCEENTITYCODENAMESPACE
+        )
         
-        <include refid="common.limitOffset"/>	
+        INNER JOIN
+        	ENTITY targetEntity
+        ON (
+        	targetEntity.ENTITYCODE = eae.TARGETENTITYCODE
+        	AND
+        	targetEntity.ENTITYCODENAMESPACE = eae.TARGETENTITYCODENAMESPACE
+        )
+        
+        WHERE
+        	rel.CODINGSCHEMEGUID = #{mapGuid}
+        AND
+        	sourceEntity.ENTITYCODE = #{mapFromCode}
+
 	</select>
+
+	<select id="getMapEntries"
+		resultMap="mapEntryDirectoryEntryResultMap">
+		
+		SELECT   
+			sourceEntity.ENTITYCODE AS sourceEntityCode,
+			sourceEntity.ENTITYCODENAMESPACE AS sourceNamespace,
+			sourceEntity.ENTITYCODENAMESPACE AS sourceUri,
+			
+			<include refid="assertedBySql"/>
+			
+        FROM  
+        	RELATION rel
+        	
+        INNER JOIN
+        	CODINGSCHEME cs
+        ON rel.CODINGSCHEMEGUID = cs.CODINGSCHEMEGUID
+        
+        INNER JOIN
+        	ASSOCIATIONPREDICATE ap
+        ON rel.RELATIONGUID = ap.RELATIONGUID
+        
+        INNER JOIN
+        	ENTITYASSNSTOENTITY eae
+        ON ap.ASSOCIATIONPREDICATEGUID = eae.ASSOCIATIONPREDICATEGUID
+        
+        INNER JOIN
+        	ENTITY sourceEntity
+        ON (
+        	sourceEntity.ENTITYCODE = eae.SOURCEENTITYCODE
+        	AND
+        	sourceEntity.ENTITYCODENAMESPACE = eae.SOURCEENTITYCODENAMESPACE
+        )
+     
+        WHERE
+        	rel.CODINGSCHEMEGUID = #{mapGuid}
+               
+        <include refid="common.limitOffset"/>	
+        
+	</select>
+	
+	<sql id="assertedBySql">
+		cs.CODINGSCHEMENAME AS map,
+		cs.CODINGSCHEMEURI AS mapUri,
+		CONCAT(cs.CODINGSCHEMENAME, "-v1") AS mapVersion,			
+		CONCAT(cs.CODINGSCHEMEURI, ":1") AS mapVersionUri
+	</sql>
 	
 </mapper>

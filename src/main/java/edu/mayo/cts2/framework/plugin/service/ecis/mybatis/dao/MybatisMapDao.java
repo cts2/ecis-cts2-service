@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import edu.mayo.cts2.framework.model.mapversion.MapEntry;
+import edu.mayo.cts2.framework.model.mapversion.MapEntryDirectoryEntry;
 import edu.mayo.cts2.framework.plugin.service.ecis.mybatis.pagination.LimitOffset;
 
 /*
@@ -15,7 +16,11 @@ import edu.mayo.cts2.framework.plugin.service.ecis.mybatis.pagination.LimitOffse
  */
 public interface MybatisMapDao {
 
-	public List<MapEntry> getMapEntries(
+	public MapEntry getMapEntryById(
+			@Param("mapGuid") String mapGuid,
+			@Param("mapFromCode") String mapFromCode);
+	
+	public List<MapEntryDirectoryEntry> getMapEntries(
 			@Param("mapGuid") String mapGuid,
 			@Param("limitOffset")  LimitOffset limtOffset);
 
