@@ -80,6 +80,14 @@ class MybatisMapDaoTest {
 	}
 	
 	@Test
+	void  TestGetAllMapEntries(){
+		def entries = dao.getAllMapEntries(new LimitOffset(10,0));
+
+		assertNotNull entries
+		assertTrue entries.size() > 0
+	}
+	
+	@Test
 	void  TestGetMapEntriesValidXml(){
 		def entries = dao.getMapEntries("9a06da7e-775d-e724-e040-1c03053c10ef", new LimitOffset(10,0));
 
@@ -103,4 +111,57 @@ class MybatisMapDaoTest {
 		}
 	}
 	
+	@Test
+	void  TestGetMaps(){
+		def entries = dao.getMaps(new LimitOffset(10,0));
+
+		assertNotNull entries
+		assertTrue entries.size() > 0
+	}
+	
+	@Test
+	void  TestGetMapsHasFromAndTo(){
+		def entries = dao.getMaps(new LimitOffset(10,0));
+
+		assertNotNull entries
+		assertTrue entries.size() > 0
+		
+		entries.each {
+			assertNotNull it.fromCodeSystem
+			assertNotNull it.toCodeSystem
+		}
+	}
+	
+	@Test
+	void  TestGetMapsHasCurrentVersion(){
+		def entries = dao.getMaps(new LimitOffset(10,0));
+
+		assertNotNull entries
+		assertTrue entries.size() > 0
+		
+		entries.each {
+			assertNotNull it.currentVersion
+		}
+	}
+	
+	@Test
+	void  TestGetMapsHaveDescriptions(){
+		def entries = dao.getMaps(new LimitOffset(10,0));
+
+		assertNotNull entries
+		assertTrue entries.size() > 0
+		
+		entries.each {
+			it.href
+			assertNotNull it.resourceSynopsis.value.content	
+		}
+	}
+	
+	@Test
+	void  TestGetAllMapVersions(){
+		def versions = dao.getAllMapVersions(new LimitOffset(10,0));
+
+		assertNotNull versions
+		assertTrue versions.size() > 0
+	}
 }

@@ -26,6 +26,17 @@ class ECISMapEntryQueryServiceTestIT {
 	EcisMapEntryQueryService service
 	
 	@Test
+	void TestGetEntries() {
+		def summaries = service.getResourceSummaries(
+			null as MapEntryQuery,
+			null,
+			new Page());
+		
+		assertNotNull summaries
+		assertTrue summaries.entries.size() > 0
+	}
+	
+	@Test
 	void TestGetEntriesWithMapVersionName() {
 		def summaries = service.getResourceSummaries(
 			[

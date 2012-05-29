@@ -4,8 +4,10 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
+import edu.mayo.cts2.framework.model.map.MapCatalogEntrySummary;
 import edu.mayo.cts2.framework.model.mapversion.MapEntry;
 import edu.mayo.cts2.framework.model.mapversion.MapEntryDirectoryEntry;
+import edu.mayo.cts2.framework.model.mapversion.MapVersionDirectoryEntry;
 import edu.mayo.cts2.framework.plugin.service.ecis.mybatis.pagination.LimitOffset;
 
 /*
@@ -20,8 +22,21 @@ public interface MybatisMapDao {
 			@Param("mapGuid") String mapGuid,
 			@Param("mapFromCode") String mapFromCode);
 	
+	public List<MapEntryDirectoryEntry> getAllMapEntries(
+			@Param("limitOffset")  LimitOffset limtOffset);
+	
 	public List<MapEntryDirectoryEntry> getMapEntries(
 			@Param("mapGuid") String mapGuid,
+			@Param("limitOffset")  LimitOffset limtOffset);
+	
+	public List<MapCatalogEntrySummary> getMaps(
+			@Param("limitOffset")  LimitOffset limtOffset);
+	
+	public List<MapVersionDirectoryEntry> getMapVersions(
+			@Param("mapGuid") String mapGuid,
+			@Param("limitOffset")  LimitOffset limtOffset);
+	
+	public List<MapVersionDirectoryEntry> getAllMapVersions(
 			@Param("limitOffset")  LimitOffset limtOffset);
 
 }

@@ -1,4 +1,4 @@
-package edu.mayo.cts2.framework.plugin.service.ecis.profile.mapentry;
+package edu.mayo.cts2.framework.plugin.service.ecis.profile.map;
 
 import java.util.HashSet;
 import java.util.List;
@@ -15,85 +15,71 @@ import edu.mayo.cts2.framework.model.core.PredicateReference;
 import edu.mayo.cts2.framework.model.core.PropertyReference;
 import edu.mayo.cts2.framework.model.core.SortCriteria;
 import edu.mayo.cts2.framework.model.directory.DirectoryResult;
-import edu.mayo.cts2.framework.model.mapversion.MapEntry;
-import edu.mayo.cts2.framework.model.mapversion.MapEntryDirectoryEntry;
+import edu.mayo.cts2.framework.model.map.MapCatalogEntry;
+import edu.mayo.cts2.framework.model.map.MapCatalogEntrySummary;
 import edu.mayo.cts2.framework.plugin.service.ecis.mybatis.dao.MybatisMapDao;
-import edu.mayo.cts2.framework.plugin.service.ecis.mybatis.id.IdService;
 import edu.mayo.cts2.framework.plugin.service.ecis.mybatis.pagination.LimitOffset;
 import edu.mayo.cts2.framework.plugin.service.ecis.mybatis.pagination.PaginationUtils;
+import edu.mayo.cts2.framework.plugin.service.ecis.profile.AbstractService;
 import edu.mayo.cts2.framework.service.meta.StandardMatchAlgorithmReference;
-import edu.mayo.cts2.framework.service.profile.mapentry.MapEntryQuery;
-import edu.mayo.cts2.framework.service.profile.mapentry.MapEntryQueryService;
+import edu.mayo.cts2.framework.service.profile.map.MapQuery;
+import edu.mayo.cts2.framework.service.profile.map.MapQueryService;
 
 @Component
-public class EcisMapEntryQueryService extends AbstractMapEntryService
-	implements MapEntryQueryService {
+public class EcisMapQueryService extends AbstractService
+	implements MapQueryService {
 	
 	@Resource
 	private MybatisMapDao mybatisMapDao;
-	
-	@Resource
-	private IdService idService;
-	
+
 	@Resource
 	private UrlConstructor urlConstructor;
 
 	@Override
-	public DirectoryResult<MapEntryDirectoryEntry> getResourceSummaries(
-			MapEntryQuery query, 
+	public DirectoryResult<MapCatalogEntrySummary> getResourceSummaries(
+			MapQuery query, 
 			SortCriteria sortCriteria, 
 			Page page) {
 		LimitOffset limitOffset = PaginationUtils.getLimitOffset(page);
 		
-		List<MapEntryDirectoryEntry> entries;
+		List<MapCatalogEntrySummary> entries = mybatisMapDao.getMaps(limitOffset);
 		
-		if(query != null && 
-				query.getRestrictions() != null && 
-				query.getRestrictions().getMapVersion() != null) {
-
-			String mapVersionName = this.stripOffVersion(
-				query.getRestrictions().getMapVersion().getName());
-			
-			String guid = 
-				this.idService.getCodeSystemGuidFromName(mapVersionName);
-
-			entries = this.mybatisMapDao.getMapEntries(guid, limitOffset);
-	
-		} else {
-			entries = this.mybatisMapDao.getAllMapEntries(limitOffset);
-		}
-
 		this.addInHref(entries);
 		
 		boolean atEnd = PaginationUtils.setAtEnd(entries, limitOffset);
 
-		return new DirectoryResult<MapEntryDirectoryEntry>(entries, atEnd);	
+		return new DirectoryResult<MapCatalogEntrySummary>(entries, atEnd);	
 	}
 
-	private void addInHref(List<MapEntryDirectoryEntry> entries) {
+	private void addInHref(List<MapCatalogEntrySummary> entries) {
 		if(entries == null){
 			return;
 		}
 		
-		for(MapEntryDirectoryEntry entry : entries) {
-			String href = this.urlConstructor.
-				createMapEntryUrl(
-					entry.getAssertedBy().getMap().getContent(),
-					entry.getAssertedBy().getMapVersion().getContent(), 
-					entry.getMapFrom().getName());
+		for(MapCatalogEntrySummary entry : entries) {
+			String mapHref = this.urlConstructor.
+				createMapUrl(
+					entry.getMapName());
 			
-			entry.setHref(href);
+			entry.setHref(mapHref);
+			
+			entry.getCurrentVersion().getMap().setHref(mapHref);
+			
+			entry.getCurrentVersion().getMapVersion().setHref(
+					this.urlConstructor.createMapVersionUrl(
+							entry.getMapName(), 
+							entry.getCurrentVersion().getMapVersion().getContent()));
 		}
 	}
 
 	@Override
-	public DirectoryResult<MapEntry> getResourceList(MapEntryQuery query,
+	public DirectoryResult<MapCatalogEntry> getResourceList(MapQuery query,
 			SortCriteria sortCriteria, Page page) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public int count(MapEntryQuery query) {
+	public int count(MapQuery query) {
 		throw new UnsupportedOperationException();
 	}
 

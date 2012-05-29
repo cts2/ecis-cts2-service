@@ -48,6 +48,38 @@
 		<result property="content" column="mapVersion" typeHandler="spaceToUnderscoreTypeHandler" />
 		<result property="uri" column="mapVersionUri" />
 	</resultMap>
+	
+	<resultMap id="mapEntrySummaryResultMap"
+		type="edu.mayo.cts2.framework.model.map.MapCatalogEntrySummary">
+		<result property="mapName" column="map" />
+		<result property="about" column="about" />
+		<result property="formalName" column="formalName" />
+		<result property="resourceSynopsis.value.content" column="description" />
+		<association property="fromCodeSystem" resultMap="fromCodeSystemReferenceReferenceResultMap" />
+		<association property="toCodeSystem" resultMap="toCodeSystemReferenceReferenceResultMap" />
+		<association property="currentVersion" resultMap="mapVersionReferenceResultMap" />
+	</resultMap>
+	
+	<resultMap id="mapVersionDirectoryEntryResultMap"
+		type="edu.mayo.cts2.framework.model.mapversion.MapVersionDirectoryEntry">
+		<result property="mapVersionName" column="mapVersion" />
+		<result property="documentURI" column="documentUri" />
+		<result property="formalName" column="formalName" />
+		<result property="resourceSynopsis.value.content" column="description" />
+		<result property="officialResourceVersionId" column="version" />
+	</resultMap>
+	
+	<resultMap id="fromCodeSystemReferenceReferenceResultMap" 
+		type="edu.mayo.cts2.framework.model.core.CodeSystemReference">
+		<result property="uri" column="fromCodeSystemUri"  />
+		<result property="content" column="fromCodeSystemName" />
+	</resultMap>
+	
+	<resultMap id="toCodeSystemReferenceReferenceResultMap" 
+		type="edu.mayo.cts2.framework.model.core.CodeSystemReference">
+		<result property="uri" column="toCodeSystemUri"  />
+		<result property="content" column="toCodeSystemName" />
+	</resultMap>
 
 	<select id="getMapEntryById"
 		resultMap="mapEntryResultMap">
@@ -64,7 +96,7 @@
 			'ALL_MATCHES' AS processingRule,
 			'1' AS entryOrder,
 			
-			<include refid="assertedBySql"/>
+			<include refid="mapVersionReferenceSql"/>
 			
         FROM  
         	RELATION rel
@@ -107,12 +139,115 @@
 	<select id="getMapEntries"
 		resultMap="mapEntryDirectoryEntryResultMap">
 		
+		<include refid="getMapEntriesSql"/>
+     
+        WHERE
+        	rel.CODINGSCHEMEGUID = #{mapGuid}
+               
+        <include refid="common.limitOffset"/>	
+        
+	</select>
+	
+	<select id="getAllMapEntries"
+		resultMap="mapEntryDirectoryEntryResultMap">
+		
+		<include refid="getMapEntriesSql"/>
+
+        <include refid="common.limitOffset"/>	
+        
+	</select>
+	
+	<select id="getMapVersions"
+		resultMap="mapVersionDirectoryEntryResultMap">
+		
+	</select>
+	
+	<select id="getAllMapVersions"
+		resultMap="mapVersionDirectoryEntryResultMap">
+		
+		SELECT
+			cs.REPRESENTSVERSION AS version,
+			cs.FORMALNAME AS formalName,
+			cs.DESCRIPTION AS description,
+			
+			toCs.CODINGSCHEMENAME AS toCodeSystemName,
+			toCs.CODINGSCHEMEURI AS toCodeSystemUri,
+			
+			fromCs.CODINGSCHEMENAME AS fromCodeSystemName,
+			fromCs.CODINGSCHEMEURI AS fromCodeSystemUri,
+			
+			CONCAT(cs.CODINGSCHEMENAME, "-v", cs.REPRESENTSVERSION) AS mapVersion,			
+			CONCAT(cs.CODINGSCHEMEURI, ":", cs.REPRESENTSVERSION) AS documentUri
+
+		FROM
+			CODINGSCHEME cs
+		
+		INNER JOIN
+			RELATION rel
+		ON rel.CODINGSCHEMEGUID = cs.CODINGSCHEMEGUID
+		
+		INNER JOIN
+			CODINGSCHEME toCs
+		ON rel.TARGETCODINGSCHEME = toCs.CODINGSCHEMENAME
+		
+		INNER JOIN
+			CODINGSCHEME fromCs
+		ON rel.SOURCECODINGSCHEME = fromCs.CODINGSCHEMENAME
+		
+		WHERE
+			rel.isMapping = TRUE
+		
+        <include refid="common.limitOffset"/>	
+        
+	</select>
+	
+	<select id="getMaps"
+		resultMap="mapEntrySummaryResultMap">
+		
+		SELECT
+			cs.CODINGSCHEMEURI AS about,
+			cs.CODINGSCHEMENAME AS map,
+			cs.FORMALNAME AS formalName,
+			cs.DESCRIPTION AS description,
+			
+			toCs.CODINGSCHEMENAME AS toCodeSystemName,
+			toCs.CODINGSCHEMEURI AS toCodeSystemUri,
+			
+			fromCs.CODINGSCHEMENAME AS fromCodeSystemName,
+			fromCs.CODINGSCHEMEURI AS fromCodeSystemUri,
+			
+			CONCAT(cs.CODINGSCHEMENAME, "-v", cs.REPRESENTSVERSION) AS mapVersion,			
+			CONCAT(cs.CODINGSCHEMEURI, ":", cs.REPRESENTSVERSION) AS mapVersionUri
+
+		FROM
+			CODINGSCHEME cs
+		
+		INNER JOIN
+			RELATION rel
+		ON rel.CODINGSCHEMEGUID = cs.CODINGSCHEMEGUID
+		
+		INNER JOIN
+			CODINGSCHEME toCs
+		ON rel.TARGETCODINGSCHEME = toCs.CODINGSCHEMENAME
+		
+		INNER JOIN
+			CODINGSCHEME fromCs
+		ON rel.SOURCECODINGSCHEME = fromCs.CODINGSCHEMENAME
+		
+		WHERE
+			rel.isMapping = TRUE
+		
+        <include refid="common.limitOffset"/>	
+        
+	</select>
+	
+	<sql id="getMapEntriesSql">
 		SELECT   
 			sourceEntity.ENTITYCODE AS sourceEntityCode,
 			sourceEntity.ENTITYCODENAMESPACE AS sourceNamespace,
-			sourceEntity.ENTITYCODENAMESPACE AS sourceUri,
+			sourceEntity.ENTITYGUID AS sourceUri,
 			
-			<include refid="assertedBySql"/>
+			<include refid="mapVersionReferenceSql"/>
 			
         FROM  
         	RELATION rel
@@ -136,15 +271,9 @@
         	AND
         	sourceEntity.ENTITYCODENAMESPACE = eae.SOURCEENTITYCODENAMESPACE
         )
-     
-        WHERE
-        	rel.CODINGSCHEMEGUID = #{mapGuid}
-               
-        <include refid="common.limitOffset"/>	
-        
-	</select>
+	</sql>
 	
-	<sql id="assertedBySql">
+	<sql id="mapVersionReferenceSql">
 		cs.CODINGSCHEMENAME AS map,
 		cs.CODINGSCHEMEURI AS mapUri,
 		CONCAT(cs.CODINGSCHEMENAME, "-v1") AS mapVersion,			
