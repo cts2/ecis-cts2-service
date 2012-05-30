@@ -112,6 +112,13 @@ class MybatisMapDaoTest {
 	}
 	
 	@Test
+	void  TestGetMap(){
+		def map = dao.getMap("9a06da7e-775d-e724-e040-1c03053c10ef");
+
+		assertNotNull map
+	}
+	
+	@Test
 	void  TestGetMaps(){
 		def entries = dao.getMaps(new LimitOffset(10,0));
 
@@ -163,5 +170,30 @@ class MybatisMapDaoTest {
 
 		assertNotNull versions
 		assertTrue versions.size() > 0
+	}
+	
+	@Test
+	void  TestGetMapVersion(){
+		def mapVersion = dao.getMapVersion("9a06da7e-775d-e724-e040-1c03053c10ef");
+
+		assertNotNull mapVersion
+	}
+	
+	@Test
+	void  TestGetMapVersionHasFromCodeSystemVersion(){
+		def mapVersion = dao.getMapVersion("9a06da7e-775d-e724-e040-1c03053c10ef");
+
+		assertNotNull mapVersion.fromCodeSystemVersion
+		assertNotNull mapVersion.fromCodeSystemVersion.codeSystem
+		assertNotNull mapVersion.fromCodeSystemVersion.version
+	}
+	
+	@Test
+	void  TestGetMapVersionHasToCodeSystemVersion(){
+		def mapVersion = dao.getMapVersion("9a06da7e-775d-e724-e040-1c03053c10ef");
+
+		assertNotNull mapVersion.toCodeSystemVersion
+		assertNotNull mapVersion.toCodeSystemVersion.codeSystem
+		assertNotNull mapVersion.toCodeSystemVersion.version
 	}
 }
