@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import edu.mayo.cts2.framework.core.url.UrlConstructor;
 import edu.mayo.cts2.framework.model.command.ResolvedReadContext;
 import edu.mayo.cts2.framework.model.core.CodeSystemVersionReference;
+import edu.mayo.cts2.framework.model.core.SourceAndNotation;
 import edu.mayo.cts2.framework.model.core.VersionTagReference;
 import edu.mayo.cts2.framework.model.mapversion.MapVersion;
 import edu.mayo.cts2.framework.model.service.core.NameOrURI;
@@ -35,7 +36,8 @@ public class EcisMapVersionReadService extends AbstractService
 			NameOrURI identifier,
 			ResolvedReadContext readContext) {
 		
-		String mapName = identifier.getName();
+		String mapName = MapVersionUtils.stripOffVersion(
+			identifier.getName());
 		
 		String mapGuid = 
 			this.idService.getCodeSystemGuidFromName(mapName);
@@ -67,11 +69,22 @@ public class EcisMapVersionReadService extends AbstractService
 		
 		this.setCodeSystemVersionReferenceHrefs(
 			entry.getToCodeSystemVersion());
+		
+		this.addInSourceAndNotation(entry);
 
 		return entry;
 	}
 	
+	private void addInSourceAndNotation(MapVersion version){
+		SourceAndNotation sourceAndNotation = new SourceAndNotation();
+		sourceAndNotation.setSourceAndNotationDescription("ECIS Terminology");
+		
+		version.setSourceAndNotation(sourceAndNotation);
+	}
+	
 	private void setCodeSystemVersionReferenceHrefs(CodeSystemVersionReference ref){
+		//NO-OP for now -- new CodeSystem Profile implemented
+		/*
 		ref.
 			getCodeSystem().
 				setHref(
@@ -84,6 +97,7 @@ public class EcisMapVersionReadService extends AbstractService
 					this.urlConstructor.createCodeSystemVersionUrl(
 							ref.getCodeSystem().getContent(),
 							ref.getVersion().getContent()));
+		*/
 	}
 
 	@Override

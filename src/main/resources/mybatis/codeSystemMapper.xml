@@ -3,7 +3,9 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="edu.mayo.cts2.framework.plugin.service.ecis.mybatis.dao.MybatisCodeSystemDao">
-
+  	
+  	<cache/>
+  
 	<resultMap id="codeSystemCatalogEntryResultMap"
 		type="edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntry">
 		<result property="codeSystemName" column="codeSystemName" />

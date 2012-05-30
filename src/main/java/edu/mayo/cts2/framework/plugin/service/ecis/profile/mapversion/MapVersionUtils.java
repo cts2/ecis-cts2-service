@@ -1,14 +1,14 @@
-package edu.mayo.cts2.framework.plugin.service.ecis.profile.mapentry;
+package edu.mayo.cts2.framework.plugin.service.ecis.profile.mapversion;
 
 import org.apache.commons.lang.StringUtils;
 
 import edu.mayo.cts2.framework.plugin.service.ecis.profile.AbstractService;
 
-public class AbstractMapEntryService extends AbstractService {
+public class MapVersionUtils extends AbstractService {
 	
-	protected final static String VERSION_SUFFIX = "-v";
+	private final static String VERSION_SUFFIX = "-v";
 
-	protected String stripOffVersion(String mapVersionName) {
+	public static String stripOffVersion(String mapVersionName) {
 		int end = StringUtils.lastIndexOf(mapVersionName, VERSION_SUFFIX);
 		return StringUtils.substring(mapVersionName, 0, end);
 	}

@@ -1,6 +1,7 @@
 package edu.mayo.cts2.framework.plugin.service.ecis.profile.mapentry
 
 import javax.annotation.Resource;
+import javax.xml.transform.stream.StreamResult
 
 import static org.junit.Assert.*
 
@@ -67,6 +68,26 @@ class ECISMapEntryQueryServiceTestIT {
 		
 		summaries.entries.each {
 			assertNotNull it.href
+		}
+		
+	}
+	
+	@Test
+	void TestGetEntriesWithMapVersionNameValidXml() {
+		def summaries = service.getResourceSummaries(
+			[
+				getRestrictions: {
+					new MapEntryQueryServiceRestrictions(mapVersion: ModelUtils.nameOrUriFromName("Operators_Code_System_to_CKS_Terminology-v9999"))
+				}
+			] as MapEntryQuery,
+			null,
+			new Page());
+		
+		assertNotNull summaries
+		assertTrue summaries.entries.size() > 0
+		
+		summaries.entries.each {
+			marshaller.marshal(it, new StreamResult(new StringWriter()))
 		}
 		
 	}

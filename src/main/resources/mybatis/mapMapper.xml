@@ -4,10 +4,12 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="edu.mayo.cts2.framework.plugin.service.ecis.mybatis.dao.MybatisMapDao">
 
+	<cache/>
+
 	<resultMap id="mapEntryResultMap"
 		type="edu.mayo.cts2.framework.model.mapversion.MapEntry">
 		<result property="mapFrom.name" column="sourceEntityCode" />
-		<result property="mapFrom.namespace" column="sourceNamespace" />
+		<result property="mapFrom.namespace" column="sourceNamespace" typeHandler="spaceToUnderscoreTypeHandler" />
 		<result property="mapFrom.uri" column="sourceUri" typeHandler="uuidUriTypeHandler"/>
 		<result property="processingRule" column="processingRule" />
 		<association property="assertedBy" resultMap="mapVersionReferenceResultMap" />
@@ -16,7 +18,7 @@
 			<result property="entryOrder" column="entryOrder"/>
 			<collection property="mapTargetAsReference" javaType="edu.mayo.cts2.framework.model.mapversion.MapTarget">
 				<result property="mapTo.name" column="targetEntityCode" />
-				<result property="mapTo.namespace" column="targetNamespace" />
+				<result property="mapTo.namespace" column="targetNamespace" typeHandler="spaceToUnderscoreTypeHandler" />
 				<result property="mapTo.uri" column="targetUri" typeHandler="uuidUriTypeHandler"/>
 				<result property="entryOrder" column="entryOrder"/>
 			</collection>
@@ -26,7 +28,7 @@
 	<resultMap id="mapEntryDirectoryEntryResultMap"
 		type="edu.mayo.cts2.framework.model.mapversion.MapEntryDirectoryEntry">
 		<result property="mapFrom.name" column="sourceEntityCode" />
-		<result property="mapFrom.namespace" column="sourceNamespace" />
+		<result property="mapFrom.namespace" column="sourceNamespace" typeHandler="spaceToUnderscoreTypeHandler" />
 		<result property="mapFrom.uri" column="sourceUri" typeHandler="uuidUriTypeHandler"/>
 		<association property="assertedBy" resultMap="mapVersionReferenceResultMap" />
 	</resultMap>
@@ -51,7 +53,7 @@
 	
 	<resultMap id="mapEntrySummaryResultMap"
 		type="edu.mayo.cts2.framework.model.map.MapCatalogEntrySummary">
-		<result property="mapName" column="map" />
+		<result property="mapName" column="map" typeHandler="spaceToUnderscoreTypeHandler" />
 		<result property="about" column="about" />
 		<result property="formalName" column="formalName" />
 		<result property="resourceSynopsis.value.content" column="description" />
@@ -62,7 +64,7 @@
 	
 	<resultMap id="mapCatalogEntryResultMap"
 		type="edu.mayo.cts2.framework.model.map.MapCatalogEntry">
-		<result property="mapName" column="map" />
+		<result property="mapName" column="map" typeHandler="spaceToUnderscoreTypeHandler" />
 		<result property="about" column="about" />
 		<result property="formalName" column="formalName" />
 		<result property="resourceSynopsis.value.content" column="description" />
@@ -73,8 +75,9 @@
 	
 	<resultMap id="mapVersionDirectoryEntryResultMap"
 		type="edu.mayo.cts2.framework.model.mapversion.MapVersionDirectoryEntry">
-		<result property="mapVersionName" column="mapVersion" />
+		<result property="mapVersionName" column="mapVersion" typeHandler="spaceToUnderscoreTypeHandler" />
 		<result property="documentURI" column="documentUri" />
+		<result property="about" column="about" />
 		<result property="formalName" column="formalName" />
 		<result property="resourceSynopsis.value.content" column="description" />
 		<result property="officialResourceVersionId" column="version" />
@@ -83,8 +86,9 @@
 	
 	<resultMap id="mapVersionResultMap"
 		type="edu.mayo.cts2.framework.model.mapversion.MapVersion">
-		<result property="mapVersionName" column="mapVersion" />
+		<result property="mapVersionName" column="mapVersion" typeHandler="spaceToUnderscoreTypeHandler" />
 		<result property="documentURI" column="documentUri" />
+		<result property="about" column="about" />
 		<result property="formalName" column="formalName" />
 		<result property="resourceSynopsis.value.content" column="description" />
 		<result property="officialResourceVersionId" column="version" />
@@ -108,38 +112,37 @@
 	<resultMap id="toCodeSystemReferenceResultMap" 
 		type="edu.mayo.cts2.framework.model.core.CodeSystemReference">
 		<result property="uri" column="toCodeSystemUri"  />
-		<result property="content" column="toCodeSystemName" />
+		<result property="content" column="toCodeSystemName" typeHandler="spaceToUnderscoreTypeHandler" />
 	</resultMap>
 	
 	<resultMap id="fromCodeSystemReferenceResultMap" 
 		type="edu.mayo.cts2.framework.model.core.CodeSystemReference">
 		<result property="uri" column="fromCodeSystemUri"  />
-		<result property="content" column="fromCodeSystemName" />
+		<result property="content" column="fromCodeSystemName" typeHandler="spaceToUnderscoreTypeHandler" />
 	</resultMap>
 
 	<resultMap id="toCodeSystemVersionNameAndMeaningResultMap" 
 		type="edu.mayo.cts2.framework.model.core.NameAndMeaningReference">
 		<result property="uri" column="toCodeSystemVersionUri"  />
-		<result property="content" column="toCodeSystemVersionName" />
+		<result property="content" column="toCodeSystemVersionName" typeHandler="spaceToUnderscoreTypeHandler" />
 	</resultMap>
 	
 	<resultMap id="fromCodeSystemVersionNameAndMeaningResultMap" 
 		type="edu.mayo.cts2.framework.model.core.NameAndMeaningReference">
 		<result property="uri" column="fromCodeSystemVersionUri"  />
-		<result property="content" column="fromCodeSystemVersionName" />
+		<result property="content" column="fromCodeSystemVersionName" typeHandler="spaceToUnderscoreTypeHandler" />
 	</resultMap>
 
 	<select id="getMapEntryById"
 		resultMap="mapEntryResultMap">
 		
 		SELECT   
-			sourceEntity.ENTITYCODE AS sourceEntityCode,
-			sourceEntity.ENTITYCODENAMESPACE AS sourceNamespace,
-			sourceEntity.ENTITYGUID AS sourceUri,
-			
-			targetEntity.ENTITYCODE AS targetEntityCode,
-			targetEntity.ENTITYCODENAMESPACE AS targetNamespace,
-			targetEntity.ENTITYGUID AS targetUri,
+		    eae.SOURCEENTITYCODE            AS sourceEntityCode,
+	        eae.SOURCEENTITYCODENAMESPACE   AS sourceNamespace,
+	        sourceEntity.ENTITYGUID         AS sourceUri,
+	        eae.TARGETENTITYCODE            AS targetEntityCode,
+	        eae.TARGETENTITYCODENAMESPACE   AS targetNamespace,
+	        targetEntity.ENTITYGUID         AS targetUri,
 			
 			'ALL_MATCHES' AS processingRule,
 			'1' AS entryOrder,
@@ -161,7 +164,7 @@
         	ENTITYASSNSTOENTITY eae
         ON ap.ASSOCIATIONPREDICATEGUID = eae.ASSOCIATIONPREDICATEGUID
         
-        INNER JOIN
+        LEFT JOIN
         	ENTITY sourceEntity
         ON (
         	sourceEntity.ENTITYCODE = eae.SOURCEENTITYCODE
@@ -169,7 +172,7 @@
         	sourceEntity.ENTITYCODENAMESPACE = eae.SOURCEENTITYCODENAMESPACE
         )
         
-        INNER JOIN
+        LEFT JOIN
         	ENTITY targetEntity
         ON (
         	targetEntity.ENTITYCODE = eae.TARGETENTITYCODE
@@ -313,6 +316,8 @@
 			cs.FORMALNAME AS formalName,
 			cs.DESCRIPTION AS description,
 			
+			cs.CODINGSCHEMEURI AS about,
+			
 			toCs.CODINGSCHEMENAME AS toCodeSystemName,
 			toCs.CODINGSCHEMEURI AS toCodeSystemUri,
 			
@@ -326,7 +331,7 @@
 			CONCAT(fromCs.CODINGSCHEMEURI, ":", fromCs.REPRESENTSVERSION) AS fromCodeSystemVersionUri,
 			
 			CONCAT(cs.CODINGSCHEMENAME, "-v", cs.REPRESENTSVERSION) AS mapVersion,			
-			CONCAT(cs.CODINGSCHEMEURI, ":", cs.REPRESENTSVERSION) AS mapVersionUri
+			CONCAT(cs.CODINGSCHEMEURI, ":", cs.REPRESENTSVERSION) AS documentUri
 
 		FROM
 			CODINGSCHEME cs
@@ -361,6 +366,8 @@
 			
 			cs.CODINGSCHEMENAME AS map,
 			cs.CODINGSCHEMEURI AS mapUri,
+			
+			cs.CODINGSCHEMEURI AS about,
 			
 			fromCs.CODINGSCHEMENAME AS fromCodeSystemName,
 			fromCs.CODINGSCHEMEURI AS fromCodeSystemUri,

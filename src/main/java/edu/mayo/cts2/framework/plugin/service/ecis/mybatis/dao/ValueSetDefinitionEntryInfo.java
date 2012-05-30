@@ -1,6 +1,10 @@
 package edu.mayo.cts2.framework.plugin.service.ecis.mybatis.dao;
 
-public class ValueSetDefinitionEntryInfo {
+import java.io.Serializable;
+
+public class ValueSetDefinitionEntryInfo implements Serializable {
+	
+	private static final long serialVersionUID = 3914282027649631967L;
 	
 	private String entityCode;
 	private String predicateGuid;

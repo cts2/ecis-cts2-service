@@ -21,12 +21,14 @@ import edu.mayo.cts2.framework.plugin.service.ecis.mybatis.dao.MybatisMapDao;
 import edu.mayo.cts2.framework.plugin.service.ecis.mybatis.id.IdService;
 import edu.mayo.cts2.framework.plugin.service.ecis.mybatis.pagination.LimitOffset;
 import edu.mayo.cts2.framework.plugin.service.ecis.mybatis.pagination.PaginationUtils;
+import edu.mayo.cts2.framework.plugin.service.ecis.profile.AbstractService;
+import edu.mayo.cts2.framework.plugin.service.ecis.profile.mapversion.MapVersionUtils;
 import edu.mayo.cts2.framework.service.meta.StandardMatchAlgorithmReference;
 import edu.mayo.cts2.framework.service.profile.mapentry.MapEntryQuery;
 import edu.mayo.cts2.framework.service.profile.mapentry.MapEntryQueryService;
 
 @Component
-public class EcisMapEntryQueryService extends AbstractMapEntryService
+public class EcisMapEntryQueryService extends AbstractService
 	implements MapEntryQueryService {
 	
 	@Resource
@@ -51,7 +53,7 @@ public class EcisMapEntryQueryService extends AbstractMapEntryService
 				query.getRestrictions() != null && 
 				query.getRestrictions().getMapVersion() != null) {
 
-			String mapVersionName = this.stripOffVersion(
+			String mapVersionName = MapVersionUtils.stripOffVersion(
 				query.getRestrictions().getMapVersion().getName());
 			
 			String guid = 

@@ -4,6 +4,8 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="edu.mayo.cts2.framework.plugin.service.ecis.mybatis.dao.MybatisIdServiceDao">
 
+	<cache/>
+
 	<select id="getCodeSystemIdResults"
 		resultType="edu.mayo.cts2.framework.plugin.service.ecis.mybatis.dao.MybatisIdServiceDao$CodeSystemIdResult">
 		

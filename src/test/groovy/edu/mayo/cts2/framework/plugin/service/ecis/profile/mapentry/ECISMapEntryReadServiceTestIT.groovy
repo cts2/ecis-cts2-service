@@ -1,6 +1,7 @@
 package edu.mayo.cts2.framework.plugin.service.ecis.profile.mapentry
 
 import javax.annotation.Resource;
+import javax.xml.transform.stream.StreamResult
 
 import static org.junit.Assert.*
 
@@ -36,6 +37,36 @@ class ECISMapEntryReadServiceTestIT {
 		)
 		
 		assertNotNull entry
+	}
+	
+	@Test
+	void TestReadMapEntryWithGuid() {
+		def entry = service.read(
+			new MapEntryReadId(
+				ModelUtils.entityNameOrUriFromName(
+				new ScopedEntityName(name:"b7f856ac-646a-4f60-8422-c6e71fcd6249")),
+				ModelUtils.nameOrUriFromName("CKS_Terminology_to_HL7_Role_Code_Codes-v1")
+				),
+			null
+		)
+		
+		assertNotNull entry
+	}
+	
+	@Test
+	void TestReadMapEntryWithGuidValidXml() {
+		def entry = service.read(
+			new MapEntryReadId(
+				ModelUtils.entityNameOrUriFromName(
+				new ScopedEntityName(name:"41f7a9dc-78a0-412e-a079-10262f8842f9")),
+				ModelUtils.nameOrUriFromName("CKS_Terminology_to_HL7_URL_Scheme_Codes-v1")
+				),
+			null
+		)
+		
+		assertNotNull entry
+		
+		marshaller.marshal(entry, new StreamResult(new StringWriter()))
 	}
 	
 }

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import edu.mayo.cts2.framework.core.url.UrlConstructor;
 import edu.mayo.cts2.framework.model.command.ResolvedReadContext;
+import edu.mayo.cts2.framework.model.core.CodeSystemReference;
 import edu.mayo.cts2.framework.model.map.MapCatalogEntry;
 import edu.mayo.cts2.framework.model.service.core.NameOrURI;
 import edu.mayo.cts2.framework.plugin.service.ecis.mybatis.dao.MybatisMapDao;
@@ -58,7 +59,16 @@ public class EcisMapReadService extends AbstractService
 						entry.getMapName(), 
 						entry.getCurrentVersion().getMapVersion().getContent()));
 		
+		this.setCodeSystemReferenceHrefs(entry.getFromCodeSystem());
+		this.setCodeSystemReferenceHrefs(entry.getToCodeSystem());
+		
 		return entry;
+	}
+	
+	private void setCodeSystemReferenceHrefs(CodeSystemReference ref){
+		//NO-OP for now -- new CodeSystem Profile implemented
+		//ref.setHref(
+		//			this.urlConstructor.createCodeSystemUrl(ref.getContent()));
 	}
 
 	@Override

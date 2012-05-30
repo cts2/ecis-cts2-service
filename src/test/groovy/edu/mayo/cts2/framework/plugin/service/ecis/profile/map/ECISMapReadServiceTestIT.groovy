@@ -45,6 +45,9 @@ class ECISMapReadServiceTestIT {
 		assertNotNull entry.currentVersion.mapVersion.href
 			
 		assertNotNull entry.versions
+		
+		//no codesystem profile yet//assertNotNull entry.fromCodeSystem.href
+		//no codesystem profile yet//assertNotNull entry.toCodeSystem.href
 	}
 	
 }

@@ -1,5 +1,6 @@
 package edu.mayo.cts2.framework.plugin.service.ecis.mybatis.dao;
 
+import java.io.Serializable;
 import java.util.List;
 
 /*
@@ -12,7 +13,9 @@ public interface MybatisIdServiceDao {
 
 	public List<CodeSystemIdResult> getCodeSystemIdResults();
 	
-	public static class CodeSystemIdResult {
+	public static class CodeSystemIdResult implements Serializable {
+	
+		private static final long serialVersionUID = 3914282027649631967L;
 		
 		private String uri;
 		private String name;

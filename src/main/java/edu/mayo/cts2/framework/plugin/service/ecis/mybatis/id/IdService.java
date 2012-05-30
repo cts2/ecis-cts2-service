@@ -49,4 +49,8 @@ public class IdService implements InitializingBean {
 				new String[]{"_"," "}, 
 				new String[]{"",""});
 	}
+
+	public String getCodeSystemUriFromName(String name) {
+		return this.cache.get(this.stripUnderscoresAndSpaces(name)).getUri();
+	}
 }

@@ -1,10 +1,13 @@
 package edu.mayo.cts2.framework.plugin.service.ecis.mybatis.dao;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public class TransitiveResult {
+public class TransitiveResult implements Serializable {
+	
+	private static final long serialVersionUID = 3914282027649631967L;
 
 	private String level1;
 	private String level2;
